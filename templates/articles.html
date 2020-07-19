@@ -1,0 +1,11 @@
+{{define "articles"}}
+{{template "header"}}
+<h1>The Articles view</h1>
+{{range .Articles}}
+    <p>{{.Title}}</p>
+    <a target="_blank" href="{{.URL}}">link</a>
+    <p>{{.Description}}</p>
+    <p>{{.PublishedAt}}</p>
+{{end}}
+{{template "footer"}}
+{{end}}
