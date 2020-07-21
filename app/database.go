@@ -1,13 +1,14 @@
-package main
+package app
 
 import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3" // sqlite
 )
 
-func newDB() *ServerDB {
+// NewDB creates a new *ServerDB.
+func NewDB() *ServerDB {
 	db, err := sqlx.Open("sqlite3", "./dacabot.sqlite")
 	if err != nil {
 		panic(err)
@@ -21,19 +22,24 @@ func newDB() *ServerDB {
 	return &ServerDB{db: db}
 }
 
+// ServerDB is a thin wrapper around sqlx.DB which
+// provides custom database functionality.
 type ServerDB struct {
 	db *sqlx.DB
 }
 
-func (d *ServerDB) close() {
+// Close the db.
+func (d *ServerDB) Close() {
 	d.db.Close()
 }
 
-func (d *ServerDB) checkhealth() error {
+// Checkhealth performs a db ping.
+func (d *ServerDB) Checkhealth() error {
 	return d.db.Ping()
 }
 
-func (d *ServerDB) createTables() {
+// CreateTables for the application.
+func (d *ServerDB) CreateTables() {
 	sql := `
 	CREATE TABLE IF NOT EXISTS article (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,8 +55,9 @@ func (d *ServerDB) createTables() {
 	d.db.MustExec(sql)
 }
 
-func (d *ServerDB) fetchArticles() []*Article {
-	sql := `SELECT * FROM article;`
+// GetArticles queries articles from the db.
+func (d *ServerDB) GetArticles() []*Article {
+	sql := `SELECT * FROM article LIMIT 10;`
 	articles := []*Article{}
 
 	if err := d.db.Select(&articles, sql); err != nil {
@@ -60,7 +67,9 @@ func (d *ServerDB) fetchArticles() []*Article {
 	return articles
 }
 
-func (d *ServerDB) insertArticle(article *Article) int {
+// InsertArticle adds a new article and returns the id.
+// If error in inserting, then 0 will be returned.
+func (d *ServerDB) InsertArticle(article *Article) int {
 	sql := `
 		INSERT INTO article (
 			"url", "title", "description", "source", "author",
@@ -84,10 +93,11 @@ func (d *ServerDB) insertArticle(article *Article) int {
 	return int(id)
 }
 
-func (d *ServerDB) insertArticles(articles []*Article) []int {
+// InsertArticles into the db.
+func (d *ServerDB) InsertArticles(articles []*Article) []int {
 	insertedIds := []int{}
 	for _, article := range articles {
-		newID := d.insertArticle(article)
+		newID := d.InsertArticle(article)
 		if newID > 0 {
 			insertedIds = append(insertedIds, newID)
 		}
