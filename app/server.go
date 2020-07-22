@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -37,28 +38,36 @@ type TemplateContext struct {
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
-	s.Templates.ExecuteTemplate(w, "index", nil)
-}
 
-func (s *Server) articlesHandler(w http.ResponseWriter, r *http.Request) {
+	s.Templates = template.Must(template.ParseGlob("templates/*.html"))
+
+	// filtering and pagination logic would go somewhere here.
 	articles := s.DB.GetArticles()
+
 	data := TemplateContext{Articles: articles}
-	s.Templates.ExecuteTemplate(w, "articles", data)
+	s.Templates.ExecuteTemplate(w, "index", data)
 }
 
-func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
-	err := s.DB.Checkhealth()
-	if err != nil {
-		http.Error(w, "Database health check failed", http.StatusInternalServerError)
-		return
+func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
+	s.Templates.ExecuteTemplate(w, "about", nil)
+}
+
+func (s *Server) statusHandler() http.HandlerFunc {
+	fmt.Println("setting up the status handler") // this is just run once.
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := s.DB.Checkhealth()
+		if err != nil {
+			http.Error(w, "Database health check failed", http.StatusInternalServerError)
+			return
+		}
+		s.Templates.ExecuteTemplate(w, "status", nil)
 	}
-	fmt.Fprint(w, "ok")
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Log the request.
-		fmt.Printf("%v %v\n", r.Method, r.RequestURI)
+		fmt.Printf("%v - %v %v\n", time.Now().Format(time.RFC822Z), r.Method, r.RequestURI)
 		// Call the next handler, which can be another
 		// middleware in the chain, or the final handler.
 		next.ServeHTTP(w, r)
@@ -68,8 +77,8 @@ func loggingMiddleware(next http.Handler) http.Handler {
 // Run sets up the routes and starts the server.
 func (s *Server) Run() {
 	s.Router.HandleFunc("/", s.indexHandler).Methods("GET")
-	s.Router.HandleFunc("/articles", s.articlesHandler).Methods("GET")
-	s.Router.HandleFunc("/health", s.healthHandler).Methods("GET")
+	s.Router.HandleFunc("/about", s.aboutHandler).Methods("GET")
+	s.Router.HandleFunc("/status", s.statusHandler()).Methods("GET")
 	s.Router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	s.Router.Use(loggingMiddleware)
 

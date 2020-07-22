@@ -1,6 +1,10 @@
 package app
 
-import "time"
+import (
+	"fmt"
+	"strings"
+	"time"
+)
 
 // Article represents a news article.
 type Article struct {
@@ -13,4 +17,34 @@ type Article struct {
 	LedeImg     string    `db:"lede_img" json:"urlToImage"`
 	PublishedAt time.Time `db:"published_at" json:"publishedAt"`
 	CreatedAt   time.Time `db:"created_at"`
+}
+
+func trimText(text string, truncLength int) string {
+	if len(text) > truncLength {
+		return text[:truncLength-3] + "..."
+	}
+	return text
+}
+
+func (a *Article) DisplayTitle() string {
+	title := strings.Split(a.Title, "|")[0]
+	return trimText(title, 72)
+}
+
+func (a *Article) DisplayDescription() string {
+	htmlTags := []string{"<ol>", "</ol>", "<ul>", "</ul>", "<li>", "</li>"}
+	description := a.Description
+	for _, tag := range htmlTags {
+		description = strings.ReplaceAll(description, tag, "")
+	}
+	return trimText(description, 120)
+}
+
+func (a *Article) RelativeDate() string {
+	now := time.Now().UTC()
+	daysDifference := int(now.Sub(a.PublishedAt).Hours() / 24)
+	if daysDifference <= 7 {
+		return fmt.Sprintf("%v days ago", daysDifference)
+	}
+	return a.PublishedAt.Format("Jan 02, 2006")
 }

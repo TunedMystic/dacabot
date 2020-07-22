@@ -57,7 +57,7 @@ func (d *ServerDB) CreateTables() {
 
 // GetArticles queries articles from the db.
 func (d *ServerDB) GetArticles() []*Article {
-	sql := `SELECT * FROM article LIMIT 10;`
+	sql := `SELECT * FROM article ORDER BY published_at DESC LIMIT 10;`
 	articles := []*Article{}
 
 	if err := d.db.Select(&articles, sql); err != nil {

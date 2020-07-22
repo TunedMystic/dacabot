@@ -8,4 +8,5 @@
 dacabot
 .DS_Store
 *.sqlite
+static/tailwind.min.css
 misc
