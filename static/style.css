@@ -1,6 +1,6 @@
-* {
+/* * {
     transition: 0.1s all;
-}
+} */
 
 body {
     /* font-family: 'Alata', sans-serif; */
@@ -17,4 +17,21 @@ body {
 
 .max-w-80-rem {
     max-width: 80rem;
+}
+
+.h-7p5 {
+    height: 7.5rem;
+}
+
+.h-4p5 {
+    height: 4.5rem;
+}
+
+.active\:heavy-gray:active {
+    border-color: #a0aec0 !important;
+    /* background-color: #cbd5e0 !important; */
+    /* background-color: #e2e8f0 !important; */
+    color: #2d3748 !important;
+    /* margin-top: 2px; */
+    transition: margin-top 50ms;
 }

@@ -37,14 +37,26 @@ func (a *Article) DisplayDescription() string {
 	for _, tag := range htmlTags {
 		description = strings.ReplaceAll(description, tag, "")
 	}
-	return trimText(description, 120)
+	return trimText(description, 140)
+}
+
+func (a *Article) getPublishedAtDifference() int {
+	now := time.Now().UTC()
+	return int(now.Sub(a.PublishedAt).Hours() / 24)
+}
+
+func (a *Article) IsRecent() bool {
+	daysDiff := a.getPublishedAtDifference()
+	return daysDiff <= 6
 }
 
 func (a *Article) RelativeDate() string {
-	now := time.Now().UTC()
-	daysDifference := int(now.Sub(a.PublishedAt).Hours() / 24)
-	if daysDifference <= 7 {
-		return fmt.Sprintf("%v days ago", daysDifference)
+	daysDiff := a.getPublishedAtDifference()
+	if daysDiff == 0 {
+		return "Today"
+	}
+	if daysDiff <= 7 {
+		return fmt.Sprintf("%v days ago", daysDiff)
 	}
 	return a.PublishedAt.Format("Jan 02, 2006")
 }
