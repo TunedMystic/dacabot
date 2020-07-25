@@ -47,7 +47,7 @@ func (a *Article) getPublishedAtDifference() int {
 
 func (a *Article) IsRecent() bool {
 	daysDiff := a.getPublishedAtDifference()
-	return daysDiff <= 6
+	return daysDiff <= 5
 }
 
 func (a *Article) RelativeDate() string {

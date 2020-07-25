@@ -34,17 +34,30 @@ type Server struct {
 
 // TemplateContext stores data to render templates with.
 type TemplateContext struct {
-	Articles []*Article
+	Articles   []*Article
+	SearchText string
+	Pagination bool
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
+	searchText := r.URL.Query().Get("q")
 
+	// TODO: temporary addition to make templates changes refresh on each request
 	s.Templates = template.Must(template.ParseGlob("templates/*.html"))
 
 	// filtering and pagination logic would go somewhere here.
-	articles := s.DB.GetArticles()
+	articles := s.DB.GetArticles(searchText)
 
-	data := TemplateContext{Articles: articles}
+	data := TemplateContext{articles, searchText, true}
+	s.Templates.ExecuteTemplate(w, "index", data)
+}
+
+func (s *Server) recentHandler(w http.ResponseWriter, r *http.Request) {
+	// TODO: temporary addition to make templates changes refresh on each request
+	s.Templates = template.Must(template.ParseGlob("templates/*.html"))
+
+	articles := s.DB.GetRecentArticles()
+	data := TemplateContext{Articles: articles, Pagination: false}
 	s.Templates.ExecuteTemplate(w, "index", data)
 }
 
@@ -77,6 +90,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 // Run sets up the routes and starts the server.
 func (s *Server) Run() {
 	s.Router.HandleFunc("/", s.indexHandler).Methods("GET")
+	s.Router.HandleFunc("/recent", s.recentHandler).Methods("GET")
 	s.Router.HandleFunc("/about", s.aboutHandler).Methods("GET")
 	s.Router.HandleFunc("/status", s.statusHandler()).Methods("GET")
 	s.Router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))

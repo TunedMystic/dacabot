@@ -23,10 +23,6 @@ body {
     height: 7.5rem;
 }
 
-.h-4p5 {
-    height: 4.5rem;
-}
-
 .active\:heavy-gray:active {
     border-color: #a0aec0 !important;
     /* background-color: #cbd5e0 !important; */

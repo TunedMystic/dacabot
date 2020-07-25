@@ -56,12 +56,37 @@ func (d *ServerDB) CreateTables() {
 }
 
 // GetArticles queries articles from the db.
-func (d *ServerDB) GetArticles() []*Article {
-	sql := `SELECT * FROM article ORDER BY published_at DESC LIMIT 10;`
+func (d *ServerDB) GetArticles(q string) []*Article {
 	articles := []*Article{}
+	qValue := "%" + q + "%"
+	sql := `
+		SELECT *
+		FROM article
+		WHERE (
+			title LIKE ? OR source LIKE ?
+		)
+		ORDER BY published_at DESC
+		LIMIT 10;`
+
+	if err := d.db.Select(&articles, sql, qValue, qValue); err != nil {
+		fmt.Printf("Could not fetch articles: %v\n", err.Error())
+	}
+
+	return articles
+}
+
+// GetRecentArticles queries recently inserted articles from the db.
+func (d *ServerDB) GetRecentArticles() []*Article {
+	articles := []*Article{}
+	sql := `
+		SELECT *
+		FROM article
+		WHERE published_at > datetime('now', '-5 days')
+		ORDER BY published_at DESC
+		LIMIT 10;`
 
 	if err := d.db.Select(&articles, sql); err != nil {
-		fmt.Printf("Could not fetch articles: %v", err.Error())
+		fmt.Printf("Could not fetch articles :%v\n", err.Error())
 	}
 
 	return articles
