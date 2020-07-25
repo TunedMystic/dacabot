@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+// RecentArticleThreshold is the number of relative days
+// that an article should be considered 'recent'.
+const RecentArticleThreshold int = 5
+
 // Article represents a news article.
 type Article struct {
 	ID          int       `db:"id"`
@@ -17,13 +21,6 @@ type Article struct {
 	LedeImg     string    `db:"lede_img" json:"urlToImage"`
 	PublishedAt time.Time `db:"published_at" json:"publishedAt"`
 	CreatedAt   time.Time `db:"created_at"`
-}
-
-func trimText(text string, truncLength int) string {
-	if len(text) > truncLength {
-		return text[:truncLength-3] + "..."
-	}
-	return text
 }
 
 func (a *Article) DisplayTitle() string {
@@ -47,10 +44,10 @@ func (a *Article) getPublishedAtDifference() int {
 
 func (a *Article) IsRecent() bool {
 	daysDiff := a.getPublishedAtDifference()
-	return daysDiff <= 5
+	return daysDiff <= RecentArticleThreshold
 }
 
-func (a *Article) RelativeDate() string {
+func (a *Article) DisplayPubDate() string {
 	daysDiff := a.getPublishedAtDifference()
 	if daysDiff == 0 {
 		return "Today"
@@ -59,4 +56,19 @@ func (a *Article) RelativeDate() string {
 		return fmt.Sprintf("%v days ago", daysDiff)
 	}
 	return a.PublishedAt.Format("Jan 02, 2006")
+}
+
+func trimText(text string, truncLength int) string {
+	if len(text) > truncLength {
+		return text[:truncLength-3] + "..."
+	}
+	return text
+}
+
+func earliestPubDate(aa []*Article) string {
+	if len(aa) == 0 {
+		return ""
+	}
+
+	return aa[len(aa)-1].PublishedAt.Format("2006-01-02 15:04:05")
 }
