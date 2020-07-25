@@ -59,15 +59,15 @@ func (n *NewsAPIClient) GetArticles(q string, from, to time.Time) ([]*Article, e
 	params.Add("apiKey", n.APIKey)
 	u.RawQuery = params.Encode()
 
-	// Make HTTP request.
+	// Make request.
+	// Returns HTTP 426 when date range is too far back.
 	res, err := http.Get(u.String())
 	if err != nil {
-		fmt.Println("Error making request")
+		fmt.Printf("[client] Error making request | %T", err)
 		return nil, err
 	}
 
-	// 426 Error when date range is too far back.
-	fmt.Printf("Got status code: %v\n", res.StatusCode)
+	fmt.Printf("[client] got status code: %v\n", res.StatusCode)
 
 	// Read the response body.
 	data, err := ioutil.ReadAll(res.Body)

@@ -80,7 +80,6 @@ func (d *ServerDB) GetArticles(q, pubDate string) ([]*Article, bool) {
 	// The extra row is removed from the results that are returned.
 	hasMoreResults := len(articles) > pageSize
 	if hasMoreResults {
-		fmt.Println("[database] has more results")
 		articles = articles[:pageSize]
 	}
 
@@ -107,7 +106,7 @@ func (d *ServerDB) GetRecentArticles() []*Article {
 
 // InsertArticle adds a new article and returns the id.
 // If error in inserting, then 0 will be returned.
-func (d *ServerDB) InsertArticle(article *Article) int {
+func (d *ServerDB) InsertArticle(article *Article) (int, error) {
 	sql := `
 		INSERT INTO article (
 			"url", "title", "description", "source", "author",
@@ -116,27 +115,27 @@ func (d *ServerDB) InsertArticle(article *Article) int {
 		VALUES (
 			:url, :title, :description, :source, :author,
 			:lede_img, :published_at, :created_at
-		)
-		ON CONFLICT DO NOTHING;`
+		);`
 
 	result, err := d.db.NamedExec(sql, article)
 	if err != nil {
-		panic(err)
+		fmt.Printf("Error inserting Article %v | %T\n", article.URL, err)
+		return 0, err
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
-	return int(id)
+	return int(id), nil
 }
 
 // InsertArticles into the db.
 func (d *ServerDB) InsertArticles(articles []*Article) []int {
 	insertedIds := []int{}
+
 	for _, article := range articles {
-		newID := d.InsertArticle(article)
-		if newID > 0 {
+		if newID, err := d.InsertArticle(article); err == nil {
 			insertedIds = append(insertedIds, newID)
 		}
 	}

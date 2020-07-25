@@ -45,6 +45,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: temporary addition to make templates changes refresh on each request
 	s.Templates = template.Must(template.ParseGlob("templates/*.html"))
 
+	// Get query params and normalize.
 	searchText := r.URL.Query().Get("q")
 
 	beforePubDate := r.URL.Query().Get("before")
@@ -58,18 +59,19 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fullPage, _ := strconv.ParseBool(fullPageParam)
 
+	// Fetch articles.
 	articles, moreResults := s.DB.GetArticles(searchText, beforePubDate)
 
-	fmt.Printf("Query: %v, beforePubDate: %v, MoreResults: %v earliestPubDate: %v\n", searchText, beforePubDate, moreResults, earliestPubDate(articles))
-
+	// Prepare template data.
 	data := TemplateContext{articles, searchText, moreResults, earliestPubDate(articles)}
 
+	fmt.Printf("searchText: %v, before: %v, results: %v, moreResults: %v\n", searchText, beforePubDate, len(articles), moreResults)
+
+	// Render page.
 	if !fullPage {
-		fmt.Println("Rendering the articles template")
 		s.Templates.ExecuteTemplate(w, "articles", data)
 		return
 	}
-	fmt.Println("Rendering the index template")
 	s.Templates.ExecuteTemplate(w, "index", data)
 }
 
