@@ -19,9 +19,9 @@
 
     <!-- Search form -->
     <div class="relative">
-        <form action="/" id="querysearch" class="relative">
+        <form action="/" class="relative">
             <input
-                id="docsearch"
+                id="search"
                 class="appearance-none leading-normal block w-full transition-colors duration-100 ease-in-out focus:outline-none border border-transparent focus:bg-gray-100 focus:border-indigo-400 placeholder-gray-600 rounded-lg bg-gray-200 py-2 pr-4 pl-10"
                 type="text"
                 placeholder="Search DACA news"
@@ -42,6 +42,7 @@
     </div>
 
 
+    <div id="articles">
     {{range .Articles}}
         <!-- Article -->
         <div class="app-article flex w-full shadow rounded-lg my-5 text-sm {{if .IsRecent}}bg-orange-100{{else}}bg-gray-100{{end}}">
@@ -83,9 +84,11 @@
             </p>
         </div>
     {{end}}
+    </div>
 
     {{if and .Articles .Pagination}}
         <!-- Load More -->
+        <input id="next-page" type="hidden" value="2">
         <button id="load-more" class="w-full my-2 py-2 rounded bg-gray-100 focus:outline-none hover:bg-gray-200 active:heavy-gray border border-gray-400">Load More</button>
     {{end}}
 
@@ -95,8 +98,81 @@
 
 </div>
 
+<script type="text/javascript">
+const header = `
+  _   _ _   _____ _                   _
+ | | | (_) |_   _| |__   ___ _ __ ___| |
+ | |_| | |   | | | '_ \\ / _ \\ '__/ _ \\ |
+ |  _  | |   | | | | | |  __/ | |  __/_|
+ |_| |_|_|   |_| |_| |_|\\___|_|  \\___(_)
+\n\n`;
 
+// ------------------------------------------------------------------
+// Init
+// ------------------------------------------------------------------
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log(header);
+
+    var loadMore = document.querySelector("#load-more")
+    window.loadMore = loadMore
+    if (loadMore !== null) {
+        loadMore.addEventListener('click', loadMoreArticles);
+    }
+});
+
+
+function loadMoreArticles() {
+    var searchTerm = document.querySelector('#search').value;
+    var nextPage = document.querySelector('#next-page');
+
+    makeRequest(`/?q=${searchTerm}&page=${nextPage.value}`, html => {
+        // Parse the articles returned.
+        var doc = new DOMParser().parseFromString(html, "text/html");
+
+        /*
+          Disable the 'Load More' button IF
+          - empty HTML was returned
+          - a full page size of results was not returned
+        */
+        if (html.trim() === '' || doc.body.childNodes.length < 10) {
+
+            // Disable the button.
+            this.setAttribute('disabled', 'disabled');
+            this.classList.remove('border-gray-400', 'hover:bg-gray-200');
+            this.classList.add('text-gray-300');
+        }
+
+        // Append the new HTML.
+        document.querySelector('#articles').innerHTML += html;
+
+        // Increment the page number.
+        nextPage.setAttribute('value', parseInt(nextPage.value) + 1);
+    }, 'when fetching more articles');
+}
+
+
+// ------------------------------------------------------------------
+// Utils / Helper functions
+// ------------------------------------------------------------------
+const errMessage = (reason) => `Something went wrong ${reason}.`;
+
+const makeRequest = (url, onSuccess, errorMessage) => {
+    fetch(url)
+    .then((response) => {
+        if (!response.ok) { throw new Error(); }
+        if (response.url.endsWith('/login/')) { throw new Error(notLoggedInErr); }
+        return response.text();
+    })
+    .then(html => onSuccess(html))
+    .catch((err) => {
+        // If a custom message was caught, then use it. Else, construct the error message with the given reason.
+        const errorMessageText = err.message ? err.message : errMessage(errorMessage);
+        alert(errorMessageText);
+    });
+};
+
+</script>
 
 {{template "footer"}}
 {{end}}
-

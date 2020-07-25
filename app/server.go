@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -40,15 +41,33 @@ type TemplateContext struct {
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
+	// Solve "SameSite warning in Chrome" -> https://stackoverflow.com/a/58320564
+	w.Header().Set("Set-Cookie", "HttpOnly;Secure;SameSite=Strict")
+
 	searchText := r.URL.Query().Get("q")
+	pageParam := r.URL.Query().Get("page")
+
+	page := 1
+	page, err := strconv.Atoi(pageParam)
+	if err != nil {
+		fmt.Printf("No page found, defaulting to 1\n")
+	}
 
 	// TODO: temporary addition to make templates changes refresh on each request
 	s.Templates = template.Must(template.ParseGlob("templates/*.html"))
 
-	// filtering and pagination logic would go somewhere here.
-	articles := s.DB.GetArticles(searchText)
+	articles, moreResults := s.DB.GetArticles(searchText, page)
 
-	data := TemplateContext{articles, searchText, true}
+	fmt.Printf("Query: %v, Page: %v, MoreResults: %v\n", searchText, page, moreResults)
+
+	data := TemplateContext{articles, searchText, moreResults}
+
+	if pageParam != "" {
+		// fmt.Println("Rendering the articles template")
+		s.Templates.ExecuteTemplate(w, "articles", data)
+		return
+	}
+	// fmt.Println("Rendering the index template")
 	s.Templates.ExecuteTemplate(w, "index", data)
 }
 

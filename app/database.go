@@ -56,9 +56,11 @@ func (d *ServerDB) CreateTables() {
 }
 
 // GetArticles queries articles from the db.
-func (d *ServerDB) GetArticles(q string) []*Article {
+func (d *ServerDB) GetArticles(q string, page int) ([]*Article, bool) {
 	articles := []*Article{}
 	qValue := "%" + q + "%"
+	pageSize := 10
+	offsetAmount := pageSize * (page - 1)
 	sql := `
 		SELECT *
 		FROM article
@@ -66,13 +68,26 @@ func (d *ServerDB) GetArticles(q string) []*Article {
 			title LIKE ? OR source LIKE ?
 		)
 		ORDER BY published_at DESC
-		LIMIT 10;`
+		LIMIT ?
+		OFFSET ?;`
 
-	if err := d.db.Select(&articles, sql, qValue, qValue); err != nil {
+	if err := d.db.Select(&articles, sql, qValue, qValue, pageSize+1, offsetAmount); err != nil {
 		fmt.Printf("Could not fetch articles: %v\n", err.Error())
 	}
 
-	return articles
+	fmt.Printf("[database] got %v results\n", len(articles))
+	for _, article := range articles {
+		fmt.Printf("%v, ", article.ID)
+	}
+	fmt.Println("")
+
+	hasMoreResults := len(articles) > pageSize
+	if hasMoreResults {
+		fmt.Println("[database] has more results")
+		articles = articles[:pageSize]
+	}
+
+	return articles, hasMoreResults
 }
 
 // GetRecentArticles queries recently inserted articles from the db.
