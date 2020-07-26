@@ -10,5 +10,30 @@
         <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap" rel="stylesheet">
     </head>
 
-    <body class="xbg-gray-200">
+    <body>
+
+    <!-- Thin colored bar -->
+    <div class="w-full h-1 bg-green-400 hover:bg-orange-400 transition-colors duration-300 cursor-pointer"></div>
+
+    <!-- Main Page -->
+    <div class="m-auto p-2 antialiased" style="min-width: 700px; max-width: 700px;">
+
+        <!-- Header -->
+        <header class="app-header w-full border-gray-800 rounded-lg mt-8">
+            <div class="flex flex-col items-center justify-center">
+                <div class="flex items-center">
+                    <h1 class="text-5xl leading-tight font-bold"><a class="transition-colors duration-100 hover:text-gray-600" href="/">DACAbot</a></h1>
+                    <span class="text-xl">&nbsp;&nbsp;</span>
+                    <div class="flex mt-1">
+                        <img class="w-6 mx-2" src="/static/globe-showing-americas.png" alt="globe-showing-americas">
+                        <img class="w-6 mx-2" src="/static/flag-united-states.png" alt="flag-united-states">
+                        <img class="w-6 mx-2" src="/static/check-mark-button.png" alt="check-mark-button">
+                    </div>
+                </div>
+                <div class="flex">
+                    <span class="text-lg text-gray-600">DACA news and resources from around the web</span>
+                </div>
+            </div>
+        </header>
+
 {{end}}

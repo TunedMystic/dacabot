@@ -8,6 +8,9 @@ import (
 	_ "github.com/mattn/go-sqlite3" // sqlite
 )
 
+// PageSize is used to page results from various tables.
+const PageSize int = 8
+
 // NewDB creates a new *ServerDB.
 func NewDB() *ServerDB {
 	db, err := sqlx.Open("sqlite3", "./dacabot.sqlite")
@@ -71,7 +74,6 @@ func (d *ServerDB) CreateTables() {
 func (d *ServerDB) GetArticles(q, pubDate string) ([]*Article, bool) {
 	articles := []*Article{}
 	qValue := "%" + q + "%"
-	pageSize := 10
 	sql := `
 	SELECT DISTINCT *
 	FROM article
@@ -83,16 +85,16 @@ func (d *ServerDB) GetArticles(q, pubDate string) ([]*Article, bool) {
 	LIMIT ?;
 	`
 
-	if err := d.db.Select(&articles, sql, pubDate, qValue, qValue, pageSize+1); err != nil {
+	if err := d.db.Select(&articles, sql, pubDate, qValue, qValue, PageSize+1); err != nil {
 		fmt.Printf("Could not fetch articles: %v\n", err.Error())
 	}
 
 	// The 'has more results' works by querying for one more row in addition to the page size amount.
 	// If the the extra row exists, then there are more articles to fetch.
 	// The extra row is removed from the results that are returned.
-	hasMoreResults := len(articles) > pageSize
+	hasMoreResults := len(articles) > PageSize
 	if hasMoreResults {
-		articles = articles[:pageSize]
+		articles = articles[:PageSize]
 	}
 
 	return articles, hasMoreResults
