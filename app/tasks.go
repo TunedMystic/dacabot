@@ -8,6 +8,8 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+var TaskUpdateArticles string = "UpdateArticles"
+
 // SetupTasks creates and runs background tasks.
 // Ref: https://godoc.org/github.com/robfig/cron
 // CRON Ref: https://www.adminschoice.com/crontab-quick-reference
@@ -38,4 +40,6 @@ func UpdateArticles() {
 	fmt.Printf("Fetched %v articles\n", len(articles))
 	articleIDs := db.InsertArticles(articles)
 	fmt.Printf("Created %v new articles: %v\n", len(articleIDs), articleIDs)
+
+	db.RecordTask(TaskUpdateArticles, false)
 }

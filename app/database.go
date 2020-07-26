@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3" // sqlite
@@ -51,9 +52,20 @@ func (d *ServerDB) CreateTables() {
 		lede_img VARCHAR(100),
 		published_at DATETIME NOT NULL,
 		created_at DATETIME NOT NULL
+	);
+
+	CREATE TABLE IF NOT EXISTS tasklog (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		task VARCHAR(100) NOT NULL,
+		manual BOOLEAN DEFAULT FALSE,
+		completed_at DATETIME NOT NULL
 	);`
 	d.db.MustExec(sql)
 }
+
+// ------------------------------------------------------------------
+// Article
+// ------------------------------------------------------------------
 
 // GetArticles queries articles from the db.
 func (d *ServerDB) GetArticles(q, pubDate string) ([]*Article, bool) {
@@ -98,14 +110,13 @@ func (d *ServerDB) GetRecentArticles() []*Article {
 		LIMIT 10;`
 
 	if err := d.db.Select(&articles, sql, daysBack); err != nil {
-		fmt.Printf("Could not fetch articles :%v\n", err.Error())
+		fmt.Printf("Could not fetch articles: %v\n", err.Error())
 	}
 
 	return articles
 }
 
 // InsertArticle adds a new article and returns the id.
-// If error in inserting, then 0 will be returned.
 func (d *ServerDB) InsertArticle(article *Article) (int, error) {
 	sql := `
 		INSERT INTO article (
@@ -140,4 +151,59 @@ func (d *ServerDB) InsertArticles(articles []*Article) []int {
 		}
 	}
 	return insertedIds
+}
+
+// ------------------------------------------------------------------
+// TaskLog
+// ------------------------------------------------------------------
+
+// InsertTaskLog adds a new tasklog and returns the id.
+func (d *ServerDB) InsertTaskLog(tasklog *TaskLog) (int, error) {
+	sql := `
+		INSERT INTO tasklog ("task", "manual", "completed_at")
+		VALUES (:task, :manual, :completed_at);`
+
+	result, err := d.db.NamedExec(sql, tasklog)
+	if err != nil {
+		fmt.Printf("Error inserting TaskLog %v | %T\n", tasklog.Task, err)
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return int(id), nil
+}
+
+// RecordTask is a convenience method to insert a TaskLog.
+func (d *ServerDB) RecordTask(task string, manual bool) {
+	tasklog := &TaskLog{
+		Task:        task,
+		Manual:      manual,
+		CompletedAt: time.Now().UTC(),
+	}
+
+	if _, err := d.InsertTaskLog(tasklog); err != nil {
+		fmt.Printf(err.Error())
+	}
+}
+
+func (d *ServerDB) GetRecentTaskLog(task string) *TaskLog {
+	tasklog := &TaskLog{}
+	sql := `
+		SELECT * FROM tasklog
+		WHERE (
+			manual = FALSE AND
+			task = ?
+		)
+		ORDER BY completed_at DESC
+		LIMIT 1;`
+
+	if err := d.db.Get(tasklog, sql, task); err != nil {
+		fmt.Printf("Could not fetch recent TaskLog: %v\n", err.Error())
+		return nil
+	}
+
+	return tasklog
 }
