@@ -8,7 +8,7 @@ import (
 
 // RecentArticleThreshold is the number of relative days
 // that an article should be considered 'recent'.
-const RecentArticleThreshold int = 5
+const RecentArticleThreshold int = 3
 
 // Article represents a news article.
 type Article struct {
@@ -51,6 +51,9 @@ func (a *Article) DisplayPubDate() string {
 	daysDiff := a.getPublishedAtDifference()
 	if daysDiff == 0 {
 		return "Today"
+	}
+	if daysDiff == 1 {
+		return fmt.Sprint("1 day ago")
 	}
 	if daysDiff <= 7 {
 		return fmt.Sprintf("%v days ago", daysDiff)

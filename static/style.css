@@ -25,9 +25,26 @@ body {
 
 .active\:heavy-gray:active {
     border-color: #a0aec0 !important;
-    /* background-color: #cbd5e0 !important; */
-    /* background-color: #e2e8f0 !important; */
     color: #2d3748 !important;
-    /* margin-top: 2px; */
     transition: margin-top 50ms;
+}
+
+/*
+    Took these from the awesome Hover.css library.
+    Ref: https://ianlunn.github.io/Hover/
+*/
+.hvr-grow {
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+
+    -webkit-transition-duration: 0.28s;
+    transition-duration: 0.28s;
+
+    -webkit-transition-property: transform;
+    transition-property: transform;
+}
+
+.hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
+    -webkit-transform: scale(1.03);
+    transform: scale(1.03);
 }

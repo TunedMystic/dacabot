@@ -1,15 +1,15 @@
 {{define "index"}}
 {{template "header"}}
 
-<div class="w-full h-2 bg-green-400"></div>
+<div class="w-full h-1 bg-green-400 hover:bg-orange-400 transition-colors duration-300 cursor-pointer"></div>
 
 <div class="m-auto p-2 antialiased" style="min-width: 700px; max-width: 700px;">
 
     <!-- Header -->
-    <header class="app-header w-full xborder-4 border-gray-800 rounded-lg xpy-4 mt-6">
+    <header class="app-header w-full border-gray-800 rounded-lg mt-8">
         <div class="flex flex-col items-center justify-center">
             <div class="flex items-center">
-                <h1 class="text-4xl font-bold"><a class="hover:text-indigo-500" href="/">Dacabot</a></h1>
+                <h1 class="text-5xl leading-tight font-bold"><a class="transition-colors duration-100 hover:text-gray-600" href="/">DACAbot</a></h1>
                 <span class="text-xl">&nbsp;&nbsp;</span>
                 <div class="flex mt-1">
                     <img class="w-6 mx-2" src="/static/globe-showing-americas.png" alt="globe-showing-americas">
@@ -24,7 +24,7 @@
     </header>
 
     <!-- Search form -->
-    <div class="relative my-10">
+    <div class="relative my-12">
         <form action="/" class="relative">
             <input
                 id="search"
@@ -40,10 +40,10 @@
         </form>
 
         <div class="w-full flex justify-center mt-3">
-            <a class="focus:outline-none rounded bg-blue-400 hover:bg-blue-500 border border-blue-500 text-white font-bold px-2 mx-2" href="/recent">Recent</a>
-            <a class="focus:outline-none rounded bg-indigo-400 hover:bg-indigo-500 border border-indigo-500 text-white font-bold px-2 mx-2" href="/?q=Trump">Trump</a>
-            <a class="focus:outline-none rounded bg-indigo-400 hover:bg-indigo-500 border border-indigo-500 text-white font-bold px-2 mx-2" href="/?q=COVID">COVID</a>
-            <a class="focus:outline-none rounded bg-indigo-400 hover:bg-indigo-500 border border-indigo-500 text-white font-bold px-2 mx-2" href="/?q=citizenship">citizenship</a>
+            <a class="focus:outline-none rounded-full bg-orange-300 hover:bg-orange-400 text-orange-800 px-2 mx-2" href="/recent">Recent</a>
+            <a class="focus:outline-none rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 mx-2" href="/?q=Trump">#trump</a>
+            <a class="focus:outline-none rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 mx-2" href="/?q=COVID">#covid</a>
+            <a class="focus:outline-none rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 mx-2" href="/?q=citizenship">#citizenship</a>
         </div>
     </div>
 

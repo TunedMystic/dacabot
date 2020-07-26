@@ -1,7 +1,7 @@
 {{define "articles"}}
     {{range .Articles}}
         <!-- Article -->
-        <div class="app-article flex w-full shadow rounded-lg my-5 text-sm {{if .IsRecent}}bg-orange-100{{else}}bg-gray-100{{end}}">
+        <div class="app-article flex w-full shadow rounded-lg my-5 text-sm {{if .IsRecent}}bg-orange-100{{else}}bg-gray-100{{end}} transition-transform hvr-grow">
             <div class="w-1/4">
                 <a class="flex" href="{{.URL}}" target="_blank">
                     <img
