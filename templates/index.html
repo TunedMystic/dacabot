@@ -1,30 +1,36 @@
 {{define "index"}}
 {{template "header"}}
 
+<div class="w-full h-2 bg-green-400"></div>
 
 <div class="m-auto p-2 antialiased" style="min-width: 700px; max-width: 700px;">
 
     <!-- Header -->
-    <header class="app-header w-full border-4 border-gray-800 rounded-lg py-2 my-8">
+    <header class="app-header w-full xborder-4 border-gray-800 rounded-lg xpy-4 mt-6">
         <div class="flex flex-col items-center justify-center">
-            <div class="">
-                <h1 class="text-4xl font-bold">Dacabot</h1>
+            <div class="flex items-center">
+                <h1 class="text-4xl font-bold"><a class="hover:text-indigo-500" href="/">Dacabot</a></h1>
+                <span class="text-xl">&nbsp;&nbsp;</span>
+                <div class="flex mt-1">
+                    <img class="w-6 mx-2" src="/static/globe-showing-americas.png" alt="globe-showing-americas">
+                    <img class="w-6 mx-2" src="/static/flag-united-states.png" alt="flag-united-states">
+                    <img class="w-6 mx-2" src="/static/check-mark-button.png" alt="check-mark-button">
+                </div>
             </div>
-            <div class="flex flex-col items-center">
-                <p class="text-xl text-gray-600">DACA news and resources from around the web</p>
-                <p class="text-xl">🤖 📝 ✅</p>
+            <div class="flex">
+                <span class="text-lg text-gray-600">DACA news and resources from around the web</span>
             </div>
         </div>
     </header>
 
     <!-- Search form -->
-    <div class="relative">
+    <div class="relative my-10">
         <form action="/" class="relative">
             <input
                 id="search"
-                class="appearance-none leading-normal block w-full transition-colors duration-100 ease-in-out focus:outline-none border border-transparent focus:bg-gray-100 focus:border-indigo-400 placeholder-gray-600 rounded-lg bg-gray-200 py-2 pr-4 pl-10"
+                class="appearance-none leading-normal block w-full transition-colors duration-100 ease-in-out focus:outline-none border border-transparent focus:bg-gray-100 focus:border-indigo-400 placeholder-gray-600 rounded-lg bg-gray-200 py-3 pr-4 pl-10"
                 type="text"
-                placeholder="Search DACA news"
+                placeholder='Search DACA news (Press "/" to focus)'
                 name="q"
                 {{if .SearchText}}value="{{.SearchText}}"{{end}}
             >
@@ -33,7 +39,7 @@
             </div>
         </form>
 
-        <div class="w-full flex justify-center mt-4">
+        <div class="w-full flex justify-center mt-3">
             <a class="focus:outline-none rounded bg-blue-400 hover:bg-blue-500 border border-blue-500 text-white font-bold px-2 mx-2" href="/recent">Recent</a>
             <a class="focus:outline-none rounded bg-indigo-400 hover:bg-indigo-500 border border-indigo-500 text-white font-bold px-2 mx-2" href="/?q=Trump">Trump</a>
             <a class="focus:outline-none rounded bg-indigo-400 hover:bg-indigo-500 border border-indigo-500 text-white font-bold px-2 mx-2" href="/?q=COVID">COVID</a>
@@ -54,7 +60,7 @@
     {{end}}
 
     <footer class="text-center my-8">
-        Made by <a class="underline" href="https://twitter.com/tunedmystic" target="_blank">Sandeep</a> · 🙂 · <a class="underline" href="https://github.com/tunedmystic/dacabot" target="_blank">View it on GitHub</a>
+        Made by <a class="underline" href="https://twitter.com/tunedmystic" target="_blank">Sandeep</a> &nbsp;·&nbsp; <img class="w-5 inline-block" src="/static/slightly-smiling-face.png" alt="slightly-smiling-face"> &nbsp;·&nbsp; <a class="underline" href="https://github.com/tunedmystic/dacabot" target="_blank">View it on GitHub</a>
     </footer>
 
 </div>
@@ -75,8 +81,10 @@ const header = `
 document.addEventListener('DOMContentLoaded', function() {
     console.log(header);
 
-    var loadMore = document.querySelector("#load-more")
-    window.loadMore = loadMore
+    // Focus on the query search input when the '/' key is pressed.
+    document.addEventListener('keydown', keyBindings);
+
+    var loadMore = document.querySelector("#load-more");
     if (loadMore !== null) {
         loadMore.addEventListener('click', loadMoreArticles);
     }
@@ -127,6 +135,18 @@ const makeRequest = (url, onSuccess, errorMessage) => {
         const errorMessageText = err.message ? err.message : errMessage(errorMessage);
         alert(errorMessageText);
     });
+};
+
+const keyBindings = (e) => {
+  // Focus the input if the front slash if pressed.
+  if (e.key == '/') {
+    e.preventDefault();
+    e.stopPropagation();
+    const input = document.querySelector('input[name="q"]');
+    if (input) {
+      input.focus();
+    }
+  }
 };
 
 </script>
