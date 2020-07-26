@@ -75,3 +75,11 @@ func earliestPubDate(aa []*Article) string {
 
 	return aa[len(aa)-1].PublishedAt.Format("2006-01-02 15:04:05")
 }
+
+// TaskLog keeps a record of varios tasks being run.
+type TaskLog struct {
+	ID          int       `db:"id"`
+	Task        string    `db:"task"`
+	Manual      bool      `db:"manual"`
+	CompletedAt time.Time `db:"completed_at"`
+}
