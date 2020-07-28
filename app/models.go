@@ -25,7 +25,7 @@ type Article struct {
 
 func (a *Article) DisplayTitle() string {
 	title := strings.Split(a.Title, "|")[0]
-	return trimText(title, 72)
+	return trimText(title, 62)
 }
 
 func (a *Article) DisplayDescription() string {

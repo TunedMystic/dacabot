@@ -10,3 +10,5 @@ dacabot
 *.sqlite
 static/tailwind.min.css
 misc
+tmp
+air.*
