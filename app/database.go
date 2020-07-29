@@ -107,7 +107,7 @@ func (d *ServerDB) GetRecentArticles() []*Article {
 	sql := `
 		SELECT *
 		FROM article
-		WHERE published_at > datetime('now', ?)
+		WHERE published_at >= datetime('now', ?)
 		ORDER BY published_at DESC
 		LIMIT 10;`
 
