@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"time"
 )
@@ -37,18 +38,18 @@ func (a *Article) DisplayDescription() string {
 	return trimText(description, 140)
 }
 
-func (a *Article) getPublishedAtDifference() int {
+func (a *Article) getPublishedAtDifference() float64 {
 	now := time.Now().UTC()
-	return int(now.Sub(a.PublishedAt).Hours() / 24)
+	return now.Sub(a.PublishedAt).Hours() / 24
 }
 
 func (a *Article) IsRecent() bool {
 	daysDiff := a.getPublishedAtDifference()
-	return daysDiff <= RecentArticleThreshold
+	return daysDiff <= float64(RecentArticleThreshold)
 }
 
 func (a *Article) DisplayPubDate() string {
-	daysDiff := a.getPublishedAtDifference()
+	daysDiff := int(math.Round(a.getPublishedAtDifference()))
 	if daysDiff == 0 {
 		return "Today"
 	}
