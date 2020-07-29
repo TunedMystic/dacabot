@@ -45,24 +45,24 @@ func (d *ServerDB) Checkhealth() error {
 // CreateTables for the application.
 func (d *ServerDB) CreateTables() {
 	sql := `
-	CREATE TABLE IF NOT EXISTS article (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		url VARCHAR(100) UNIQUE NOT NULL,
-		title VARCHAR(100) NOT NULL,
-		description VARCHAR(100),
-		source VARCHAR(100) NOT NULL,
-		author VARCHAR(100),
-		lede_img VARCHAR(100),
-		published_at DATETIME NOT NULL,
-		created_at DATETIME NOT NULL
-	);
+		CREATE TABLE IF NOT EXISTS article (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			url VARCHAR(100) UNIQUE NOT NULL,
+			title VARCHAR(100) NOT NULL,
+			description VARCHAR(100),
+			source VARCHAR(100) NOT NULL,
+			author VARCHAR(100),
+			lede_img VARCHAR(100),
+			published_at DATETIME NOT NULL,
+			created_at DATETIME NOT NULL
+		);
 
-	CREATE TABLE IF NOT EXISTS tasklog (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		task VARCHAR(100) NOT NULL,
-		manual BOOLEAN DEFAULT FALSE,
-		completed_at DATETIME NOT NULL
-	);`
+		CREATE TABLE IF NOT EXISTS tasklog (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			task VARCHAR(100) NOT NULL,
+			manual BOOLEAN DEFAULT FALSE,
+			completed_at DATETIME NOT NULL
+		);`
 	d.db.MustExec(sql)
 }
 
@@ -75,15 +75,14 @@ func (d *ServerDB) GetArticles(q, pubDate string) ([]*Article, bool) {
 	articles := []*Article{}
 	qValue := "%" + q + "%"
 	sql := `
-	SELECT DISTINCT *
-	FROM article
-	WHERE (
-		published_at < ? AND
-		(title LIKE ? OR source LIKE ?)
-	)
-	ORDER BY published_at DESC
-	LIMIT ?;
-	`
+		SELECT DISTINCT *
+		FROM article
+		WHERE (
+			published_at < ? AND
+			(title LIKE ? OR source LIKE ?)
+		)
+		ORDER BY published_at DESC
+		LIMIT ?;`
 
 	if err := d.db.Select(&articles, sql, pubDate, qValue, qValue, PageSize+1); err != nil {
 		fmt.Printf("Could not fetch articles: %v\n", err.Error())
