@@ -1,5 +1,5 @@
 {{define "status"}}
-{{template "header"}}
+{{template "header" .}}
 
 
 <div class="my-12">
@@ -9,34 +9,33 @@
     </div>
 
     <div class="flex justify-center">
+        <div class="flex flex-col w-full">
 
-        <div class="flex flex-col xjustify-center w-3/4 rounded bg-gray-100 py-2">
-
-            <!-- Database status -->
-            <div class="w-10/12 flex items-center xjustify-center my-3 ml-16">
-                <div class="rounded-full text-green-500 bg-green-200 border-2 border-green-500 mx-3">
-                    <svg class="w-10 h-10 py-2 px-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M8.294,16.998c-0.435,0-0.847-0.203-1.111-0.553L3.61,11.724c-0.465-0.613-0.344-1.486,0.27-1.951  c0.615-0.467,1.488-0.344,1.953,0.27l2.351,3.104l5.911-9.492c0.407-0.652,1.267-0.852,1.921-0.445  c0.653,0.406,0.854,1.266,0.446,1.92L9.478,16.34c-0.242,0.391-0.661,0.635-1.12,0.656C8.336,16.998,8.316,16.998,8.294,16.998z"/>
-                    </svg>
+            {{range .StatusChecks}}
+                <div data-status="website" class="w-2/3 m-auto flex items-center justify-between bg-gray-100 rounded border border-gray-400 px-4 py-3 my-1">
+                    <p class="font-semibold">{{.Name}}{{if .Info}} <span class="font-normal text-sm text-gray-600"> - {{.Info}}</span>{{end}}</p>
+                    <div class="flex items-center">
+                        {{if .OK}}
+                            <p class="text-green-600">{{.Status}}</p>
+                            <div class="rounded-full text-green-500 bg-green-200 border-2 border-green-500 ml-3">
+                                <svg class="w-6 h-6 py-1 px-1 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path d="M8.294,16.998c-0.435,0-0.847-0.203-1.111-0.553L3.61,11.724c-0.465-0.613-0.344-1.486,0.27-1.951  c0.615-0.467,1.488-0.344,1.953,0.27l2.351,3.104l5.911-9.492c0.407-0.652,1.267-0.852,1.921-0.445  c0.653,0.406,0.854,1.266,0.446,1.92L9.478,16.34c-0.242,0.391-0.661,0.635-1.12,0.656C8.336,16.998,8.316,16.998,8.294,16.998z"/>
+                                </svg>
+                            </div>
+                        {{else}}
+                            <p class="text-orange-600">{{.Status}}</p>
+                            <div class="rounded-full text-orange-500 bg-orange-200 border-2 border-orange-500 ml-3">
+                                <svg class="w-6 h-6 py-1 px-1 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 301.691 301.691">
+                                    <g>
+                                        <polygon points="119.151,0 129.6,218.406 172.06,218.406 182.54,0  "/>
+                                        <rect x="123.563" y="251.168" width="55.525" height="55.523"/>
+                                    </g>
+                                </svg>
+                            </div>
+                        {{end}}
+                    </div>
                 </div>
-                {{if .DBHealth}}
-                    <p>Database is operational</p>
-                {{else}}
-                    <p>Database is <strong>NOT</strong> operational</p>
-                {{end}}
-            </div>
-
-            <hr class="w-9/12 m-auto">
-
-            <!-- Last sync status -->
-            <div class="w-10/12 flex items-center xjustify-center my-3 ml-16">
-                <div class="rounded-full text-green-500 bg-green-200 border-2 border-green-500 mx-3">
-                    <svg class="w-10 h-10 py-2 px-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M8.294,16.998c-0.435,0-0.847-0.203-1.111-0.553L3.61,11.724c-0.465-0.613-0.344-1.486,0.27-1.951  c0.615-0.467,1.488-0.344,1.953,0.27l2.351,3.104l5.911-9.492c0.407-0.652,1.267-0.852,1.921-0.445  c0.653,0.406,0.854,1.266,0.446,1.92L9.478,16.34c-0.242,0.391-0.661,0.635-1.12,0.656C8.336,16.998,8.316,16.998,8.294,16.998z"/>
-                    </svg>
-                </div>
-                <p>Last syned with news sources on <span class="font-semibold">{{.LastSync}}</span></p>
-            </div>
+            {{end}}
 
         </div>
     </div>

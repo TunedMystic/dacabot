@@ -12,8 +12,16 @@
 
     <body>
 
-    <!-- Thin colored bar -->
-    <div class="w-full h-1 bg-green-400 hover:bg-orange-400 transition-colors duration-300 cursor-pointer"></div>
+    <!-- Thin colored bar that looks cool ¯\_(ツ)_/¯ -->
+    {{if .CurrentRoute}}
+        {{if eq .CurrentRoute "/recent"}}
+            <div class="w-full h-1 bg-orange-400"></div>
+        {{else}}
+            <div class="w-full h-1 bg-green-400"></div>
+        {{end}}
+    {{else}}
+        <div class="w-full h-1 bg-green-400"></div>
+    {{end}}
 
     <!-- Main Page -->
     <div class="m-auto p-2 antialiased" style="min-width: 700px; max-width: 700px;">

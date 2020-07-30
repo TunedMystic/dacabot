@@ -39,14 +39,20 @@ type TemplateContext struct {
 	SearchText    string
 	Pagination    bool
 	PubDateCursor string
-	DBHealth      bool
-	LastSync      string
+	// DBHealth      bool
+	// LastSync      string
+	CurrentRoute string
+	StatusChecks []*StatusCheck
+}
+
+type StatusCheck struct {
+	Name   string
+	Info   string
+	Status string
+	OK     bool
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO: temporary addition to make templates changes refresh on each request
-	s.Templates = template.Must(template.ParseGlob("templates/*.html"))
-
 	// Get query params and normalize.
 	searchText := r.URL.Query().Get("q")
 
@@ -70,6 +76,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 		SearchText:    searchText,
 		Pagination:    moreResults,
 		PubDateCursor: earliestPubDate(articles),
+		CurrentRoute:  r.URL.Path,
 	}
 
 	fmt.Printf("searchText: %v, before: %v, results: %v, moreResults: %v\n", searchText, beforePubDate, len(articles), moreResults)
@@ -83,11 +90,16 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) recentHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO: temporary addition to make templates changes refresh on each request
-	s.Templates = template.Must(template.ParseGlob("templates/*.html"))
-
+	// Fetch articles.
 	articles := s.DB.GetRecentArticles()
-	data := TemplateContext{Articles: articles, Pagination: false}
+
+	// Prepare template data.
+	data := TemplateContext{
+		Articles:     articles,
+		Pagination:   false,
+		CurrentRoute: r.URL.Path,
+	}
+
 	s.Templates.ExecuteTemplate(w, "index", data)
 }
 
@@ -98,20 +110,43 @@ func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Server) statusHandler() http.HandlerFunc {
 	fmt.Println("setting up the status handler") // this is just run once.
 	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO: temporary addition to make templates changes refresh on each request
-		s.Templates = template.Must(template.ParseGlob("templates/*.html"))
+		webCheck := &StatusCheck{
+			Name:   "Website",
+			Status: "Operational",
+			OK:     true,
+		}
 
-		data := TemplateContext{DBHealth: true}
+		dbCheck := &StatusCheck{
+			Name:   "Database",
+			Status: "Operational",
+			OK:     true,
+		}
 
-		// TODO: Now I have to put the DB check and the latest tasklog run date in the templates.
 		err := s.DB.Checkhealth()
 		if err != nil {
-			http.Error(w, "Database health check failed", http.StatusInternalServerError)
-			data.DBHealth = false
+			// http.Error(w, "Database health check failed", http.StatusInternalServerError)
+			dbCheck.Status = "Unresponsive"
+			dbCheck.OK = false
 		}
 
 		tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
-		data.LastSync = tasklog.CompletedAt.Format("January 02, 2006")
+
+		syncCheck := &StatusCheck{
+			Name:   "Last Sync",
+			Info:   tasklog.CompletedAt.Format("January 02, 2006"),
+			Status: "Timely",
+			OK:     true,
+		}
+
+		if !tasklog.IsRecent() {
+			syncCheck.Status = "Outdated"
+			syncCheck.OK = false
+		}
+
+		// Prepare template data.
+		data := TemplateContext{
+			StatusChecks: []*StatusCheck{webCheck, dbCheck, syncCheck},
+		}
 
 		s.Templates.ExecuteTemplate(w, "status", data)
 	}

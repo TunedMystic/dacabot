@@ -1,5 +1,5 @@
 {{define "index"}}
-{{template "header"}}
+{{template "header" .}}
 
 
 
@@ -20,7 +20,12 @@
         </form>
 
         <div class="w-full flex justify-center mt-3">
-            <a class="focus:outline-none rounded-full bg-orange-300 hover:bg-orange-400 text-orange-800 px-2 mx-2" href="/recent">Recent</a>
+            {{if eq .CurrentRoute "/recent"}}
+                <a class="focus:outline-none rounded-full bg-green-300 hover:bg-green-400 text-green-800 px-2 mx-2" href="/">All Articles</a>
+            {{else}}
+                <a class="focus:outline-none rounded-full bg-orange-300 hover:bg-orange-400 text-orange-800 px-2 mx-2" href="/recent">Recent</a>
+            {{end}}
+
             <a class="focus:outline-none rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 mx-2" href="/?q=Trump">#trump</a>
             <a class="focus:outline-none rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 mx-2" href="/?q=COVID">#covid</a>
             <a class="focus:outline-none rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 mx-2" href="/?q=citizenship">#citizenship</a>

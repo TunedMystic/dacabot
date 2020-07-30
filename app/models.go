@@ -80,10 +80,24 @@ func earliestPubDate(aa []*Article) string {
 	return aa[len(aa)-1].PublishedAt.Format("2006-01-02 15:04:05")
 }
 
+// RecentTaskLogThreshold is the number of relative days
+// that a TaskLog should be considered 'recent'.
+const RecentTaskLogThreshold = 3
+
 // TaskLog keeps a record of varios tasks being run.
 type TaskLog struct {
 	ID          int       `db:"id"`
 	Task        string    `db:"task"`
 	Manual      bool      `db:"manual"`
 	CompletedAt time.Time `db:"completed_at"`
+}
+
+func (t *TaskLog) getCompletedAtDifference() float64 {
+	now := time.Now().UTC()
+	return now.Sub(t.CompletedAt).Hours() / 24
+}
+
+func (t *TaskLog) IsRecent() bool {
+	daysDiff := t.getCompletedAtDifference()
+	return daysDiff <= RecentTaskLogThreshold
 }
