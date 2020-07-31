@@ -35,7 +35,7 @@ func (a *Article) DisplayDescription() string {
 	for _, tag := range htmlTags {
 		description = strings.ReplaceAll(description, tag, "")
 	}
-	return trimText(description, 140)
+	return trimText(description, 130)
 }
 
 func (a *Article) getPublishedAtDifference() float64 {

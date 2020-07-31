@@ -1,11 +1,11 @@
 {{define "articles"}}
     {{range .Articles}}
         <!-- Article -->
-        <div class="app-article flex w-full shadow rounded-lg my-5 {{if .IsRecent}}bg-orange-100{{else}}bg-gray-100{{end}} transition-transform hvr-grow">
+        <div class="app-article flex w-full shadow rounded-lg my-4 {{if .IsRecent}}bg-orange-100{{else}}bg-gray-100{{end}} transition-transform hvr-grow">
             <div class="w-1/4">
                 <a class="flex" href="{{.URL}}" target="_blank">
                     <img
-                        class="w-full {{if .Description}}h-7p5{{else}}h-20{{end}} rounded-tl-md rounded-bl-md object-cover object-center"
+                        class="w-full {{if .Description}}h-7p7{{else}}h-20{{end}} rounded-tl-md rounded-bl-md object-cover object-center"
                         width="300"
                         loading="lazy"
                         alt="article-{{.ID}}-image"
@@ -18,9 +18,9 @@
                     <p class="font-semibold text-md">
                         <a class="transition-colors duration-100 ease-in-out hover:text-gray-800" href="{{.URL}}" title="{{.Title}}" target="_blank">{{.DisplayTitle}}</a>
                     </p>
-                    <p class="text-sm text-gray-600">{{.DisplayDescription}}</p>
+                    <p class="text-md text-gray-600 my-1 leading-tight">{{.DisplayDescription}}</p>
                 </div>
-                <div class="text-sm mt-3">
+                <div class="text-sm mt-4">
                     <span class="inline-block px-2 rounded-lg {{if .IsRecent}}bg-orange-300 text-orange-800{{else}}bg-gray-300 text-gray-800{{end}}">#{{.Source}}</span>
                     &nbsp;
                     <span class="text-gray-800">{{.DisplayPubDate}}</span>

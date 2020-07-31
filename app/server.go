@@ -104,7 +104,7 @@ func (s *Server) recentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
-	s.Templates.ExecuteTemplate(w, "about", nil)
+	s.Templates.ExecuteTemplate(w, "about", TemplateContext{})
 }
 
 func (s *Server) statusHandler() http.HandlerFunc {
