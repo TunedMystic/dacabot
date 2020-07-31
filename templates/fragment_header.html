@@ -13,12 +13,8 @@
     <body>
 
     <!-- Thin colored bar that looks cool ¯\_(ツ)_/¯ -->
-    {{if .CurrentRoute}}
-        {{if eq .CurrentRoute "/recent"}}
-            <div class="w-full h-1 bg-orange-400"></div>
-        {{else}}
-            <div class="w-full h-1 bg-green-400"></div>
-        {{end}}
+    {{if and (.CurrentRoute) (eq .CurrentRoute "/recent")}}
+        <div class="w-full h-1 bg-orange-400"></div>
     {{else}}
         <div class="w-full h-1 bg-green-400"></div>
     {{end}}
