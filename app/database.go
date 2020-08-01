@@ -9,7 +9,7 @@ import (
 )
 
 // PageSize is used to page results from various tables.
-const PageSize int = 8
+const PageSize int = 6
 
 // NewDB creates a new *ServerDB.
 func NewDB() *ServerDB {

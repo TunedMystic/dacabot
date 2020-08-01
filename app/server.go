@@ -43,6 +43,7 @@ type TemplateContext struct {
 	// LastSync      string
 	CurrentRoute string
 	StatusChecks []*StatusCheck
+	PartialPage  bool
 }
 
 type StatusCheck struct {
@@ -83,6 +84,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Render page.
 	if !fullPage {
+		data.PartialPage = true
 		s.Templates.ExecuteTemplate(w, "articles", data)
 		return
 	}

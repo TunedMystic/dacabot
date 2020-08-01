@@ -1,7 +1,14 @@
 {{define "articles"}}
+
+        {{if .PartialPage}}
+            <div class="my-5 flex justify-center">
+                <img class="w-5 h-5 xmx-1 inline-block" src="/static/small-blue-diamond.png" alt="small-blue-diamond">
+                <img class="w-5 h-5 xmx-1 inline-block" src="/static/small-blue-diamond.png" alt="small-blue-diamond">
+            </div>
+        {{end}}
     {{range .Articles}}
         <!-- Article -->
-        <div class="app-article flex w-full shadow rounded-lg my-4 {{if .IsRecent}}bg-orange-100{{else}}bg-gray-100{{end}} transition-transform hvr-grow">
+        <div class="app-article flex w-full rounded my-4 bg-gray-100 border border-gray-300 transition-transform hvr-grow">
             <div class="w-1/4">
                 <a class="flex" href="{{.URL}}" target="_blank">
                     <img

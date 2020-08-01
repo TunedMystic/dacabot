@@ -1,7 +1,10 @@
 {{define "header"}}
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
         <title>Web app</title>
         <link href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII=" rel="icon" type="image/x-icon">
         <link rel="stylesheet" href="/static/tailwind.min.css">
@@ -12,12 +15,10 @@
 
     <body>
 
+
     <!-- Thin colored bar that looks cool ¯\_(ツ)_/¯ -->
-    {{if and (.CurrentRoute) (eq .CurrentRoute "/recent")}}
-        <div class="w-full h-1 bg-orange-400"></div>
-    {{else}}
-        <div class="w-full h-1 bg-green-400"></div>
-    {{end}}
+    <div class="w-full h-1 bg-green-400"></div>
+
 
     <!-- Main Page -->
     <div class="m-auto p-2 antialiased" style="min-width: 720px; max-width: 720px;">
