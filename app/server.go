@@ -95,6 +95,11 @@ func (s *Server) recentHandler(w http.ResponseWriter, r *http.Request) {
 	// Fetch articles.
 	articles := s.DB.GetRecentArticles()
 
+	// If there are no recent articles, then redirect to the index page.
+	if len(articles) == 0 {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
 	// Prepare template data.
 	data := TemplateContext{
 		Articles:     articles,
