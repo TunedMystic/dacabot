@@ -6,13 +6,14 @@
                 <img class="w-5 h-5 xmx-1 inline-block" src="/static/small-blue-diamond.png" alt="small-blue-diamond">
             </div>
         {{end}}
+
     {{range .Articles}}
         <!-- Article -->
-        <div class="app-article flex w-full rounded my-4 bg-gray-100 border border-gray-300 transition-transform hvr-grow">
-            <div class="w-1/4">
+        <div class="app-article flex flex-col sm:flex-row w-full rounded my-4 bg-gray-100 border border-gray-300 hvr-grow">
+            <div class="w-full sm:w-1/4">
                 <a class="flex" href="{{.URL}}" target="_blank">
                     <img
-                        class="w-full {{if .Description}}h-7p7{{else}}h-20{{end}} rounded-tl-md rounded-bl-md object-cover object-center"
+                        class="w-full {{if .Description}}h-7p7{{else}}h-20{{end}} rounded-tl rounded-tr sm:rounded-tl sm:rounded-bl sm:rounded-tr-none object-cover object-center"
                         width="300"
                         loading="lazy"
                         alt="article-{{.ID}}-image"
@@ -20,12 +21,13 @@
                     >
                 </a>
             </div>
-            <div class="w-3/4 px-3 py-2">
+            <div class="w-full sm:w-3/4 px-3 py-2">
                 <div class="app-article-description">
                     <p class="font-semibold text-md">
-                        <a class="transition-colors duration-100 ease-in-out hover:text-gray-800" href="{{.URL}}" title="{{.Title}}" target="_blank">{{.DisplayTitle}}</a>
+                        <a class="hidden sm:block transition-colors duration-100 ease-in-out hover:text-gray-800" href="{{.URL}}" title="{{.Title}}" target="_blank">{{.DisplayTitle}}</a>
+                        <a class="block sm:hidden transition-colors duration-100 ease-in-out hover:text-gray-800" href="{{.URL}}" title="{{.Title}}" target="_blank">{{.Title}}</a>
                     </p>
-                    <p class="text-md text-gray-600 my-1 leading-tight">{{.DisplayDescription}}</p>
+                    <p class="text-sm sm:text-md text-gray-600 my-1 leading-tight">{{.DisplayDescription}}</p>
                 </div>
                 <div class="text-sm mt-4">
                     <span class="inline-block px-2 rounded-lg {{if .IsRecent}}bg-orange-300 text-orange-800{{else}}bg-gray-300 text-gray-800{{end}}">#{{.Source}}</span>
