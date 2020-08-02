@@ -3,13 +3,9 @@ package main
 import "github.com/tunedmystic/dacabot/app"
 
 func main() {
-	// Setup server.
-	server := app.NewServer()
-	defer server.Cleanup()
 
-	// Setup periodic tasks.
-	app.SetupTasks()
+	// Execute the CLI to do things like
+	// run the server or fetch articles.
+	app.RunCLI()
 
-	// Run server.
-	server.Run()
 }
