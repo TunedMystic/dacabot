@@ -1,6 +1,7 @@
 dacabot
 ---
 [![Build Status](https://travis-ci.com/TunedMystic/dacabot.svg?branch=master)](https://travis-ci.com/TunedMystic/dacabot)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tunedmystic/dacabot)](https://goreportcard.com/report/github.com/tunedmystic/dacabot)
 
 Dacabot is a news aggregator for DACA-related news.
 
