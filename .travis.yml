@@ -3,6 +3,10 @@ language: go
 go:
   - 1.14.x
 
+branches:
+  only:
+    - master
+
 cache:
     directories:
         - $GOPATH/pkg/mod  # Cache the go modules
