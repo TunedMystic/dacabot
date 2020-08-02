@@ -177,7 +177,7 @@ func cookieMiddleWare(next http.Handler) http.Handler {
 }
 
 // Run sets up the routes and starts the server.
-func (s *Server) Run() {
+func (s *Server) Run(port int) {
 	s.Router.HandleFunc("/", s.indexHandler).Methods("GET")
 	s.Router.HandleFunc("/recent", s.recentHandler).Methods("GET")
 	s.Router.HandleFunc("/about", s.aboutHandler).Methods("GET")
@@ -186,8 +186,9 @@ func (s *Server) Run() {
 	s.Router.Use(loggingMiddleware)
 	s.Router.Use(cookieMiddleWare)
 
-	fmt.Println("[run] starting Server on port 8000...")
-	log.Fatal(http.ListenAndServe("0.0.0.0:8000", s.Router))
+	addr := fmt.Sprintf("0.0.0.0:%v", port)
+	fmt.Printf("[run] starting Server on %v...\n", addr)
+	log.Fatal(http.ListenAndServe(addr, s.Router))
 }
 
 // Cleanup handles cleaning up the server resources.
