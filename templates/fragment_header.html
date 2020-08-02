@@ -1,7 +1,10 @@
 {{define "header"}}
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
         <title>Web app</title>
         <link href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII=" rel="icon" type="image/x-icon">
         <link rel="stylesheet" href="/static/tailwind.min.css">
@@ -12,30 +15,27 @@
 
     <body>
 
+
     <!-- Thin colored bar that looks cool ¯\_(ツ)_/¯ -->
-    {{if and (.CurrentRoute) (eq .CurrentRoute "/recent")}}
-        <div class="w-full h-1 bg-orange-400"></div>
-    {{else}}
-        <div class="w-full h-1 bg-green-400"></div>
-    {{end}}
+    <div class="w-full h-1 bg-green-400"></div>
+
 
     <!-- Main Page -->
-    <div class="m-auto p-2 antialiased" style="min-width: 720px; max-width: 720px;">
+    <div class="app-main-page w-full m-auto p-3 antialiased">
 
         <!-- Header -->
-        <header class="app-header w-full border-gray-800 rounded-lg mt-8">
+        <header class="app-header w-full border-gray-800 rounded-lg mt-2 sm:mt-6">
             <div class="flex flex-col items-center justify-center">
                 <div class="flex items-center">
-                    <h1 class="text-5xl leading-tight font-bold"><a class="transition-colors duration-100 hover:text-gray-600" href="/">DACAbot</a></h1>
+                    <h1 class="text-3xl sm:text-5xl leading-tight font-bold"><a class="transition-colors duration-100 hover:text-gray-600" href="/">DACAbot</a></h1>
                     <span class="text-xl">&nbsp;&nbsp;</span>
                     <div class="flex mt-1">
                         <img class="w-6 h-6 mx-2" src="/static/globe-showing-americas.png" alt="globe-showing-americas">
                         <img class="w-6 h-6 mx-2" src="/static/flag-united-states.png" alt="flag-united-states">
-                        <img class="w-6 h-6 mx-2" src="/static/check-mark-button.png" alt="check-mark-button">
                     </div>
                 </div>
                 <div class="flex">
-                    <span class="text-lg text-gray-600">DACA news and resources from around the web</span>
+                    <span class="text-md sm:text-lg text-gray-600">DACA news articles from around the web</span>
                 </div>
             </div>
         </header>

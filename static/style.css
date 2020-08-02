@@ -2,6 +2,13 @@ body {
     font-family: 'Source Sans Pro', sans-serif;
 }
 
+@media (min-width: 768px) {
+    .app-main-page {
+        min-width: 720px;
+        max-width: 720px;
+    }
+}
+
 .highlight {
     background: #fff18a;
 }
@@ -42,6 +49,19 @@ body {
 .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
     -webkit-transform: scale(1.02);
     transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+    .hvr-grow {
+        -webkit-transform: perspective(0px) translateZ(0);
+        transform: perspective(0px) translateZ(0);
+        -webkit-transition-property: none;
+        transition-property: none;
+    }
+    .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
+        -webkit-transform: none;
+        transform: none
+    }
 }
 
 
