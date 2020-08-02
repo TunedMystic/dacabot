@@ -39,11 +39,9 @@ type TemplateContext struct {
 	SearchText    string
 	Pagination    bool
 	PubDateCursor string
-	// DBHealth      bool
-	// LastSync      string
-	CurrentRoute string
-	StatusChecks []*StatusCheck
-	PartialPage  bool
+	CurrentRoute  string
+	StatusChecks  []*StatusCheck
+	PartialPage   bool
 }
 
 type StatusCheck struct {

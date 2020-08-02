@@ -10,6 +10,7 @@ help:  ## This help
 
 .PHONY: build
 build: clean  ## Build the binary
+	@echo "Building binary"
 	@go build -ldflags="-s -w" -o dacabot main.go
 
 .PHONY: clean
@@ -21,3 +22,13 @@ clean:  ## Remove cached files and dirs from workspace
 .PHONY: dev
 dev:  ## Run the program in dev mode.
 	@go run main.go run-server
+
+.PHONY: install
+install:  ## Install project dependencies
+	@echo "Downloading modules"
+	@go mod download
+
+.PHONY: test
+test: ## Run tests
+	@echo "Running tests"
+	@go test ./app

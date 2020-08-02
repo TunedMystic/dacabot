@@ -1,0 +1,12 @@
+language: go
+
+go:
+  - 1.14.x
+
+cache:
+    directories:
+        - $GOPATH/pkg/mod  # Cache the go modules
+
+install: make install
+
+script: make test

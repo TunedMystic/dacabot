@@ -1,6 +1,14 @@
 package main
 
-import "github.com/tunedmystic/dacabot/app"
+import (
+	"log"
+
+	"github.com/tunedmystic/dacabot/app"
+)
+
+func init() {
+	log.SetFlags(0)
+}
 
 func main() {
 
