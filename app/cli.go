@@ -1,34 +1,12 @@
 package app
 
 import (
-	"flag"
-	"fmt"
 	"log"
 	"os"
 	"time"
+
+	"github.com/integrii/flaggy"
 )
-
-// PrintUsage displays the different commands for the application.
-func PrintUsage(flags ...*flag.FlagSet) {
-	fmt.Println("\nUsage:  dacabot COMMAND [OPTIONS]")
-	fmt.Println("\nWeb Application for DACA news")
-	fmt.Print("\n\n")
-
-	for _, flagset := range flags {
-		fmt.Printf("[%v]\n", flagset.Name())
-		flagset.PrintDefaults()
-		fmt.Println()
-	}
-
-	os.Exit(0)
-}
-
-// Parse is a helper function to parse args.
-func Parse(flag *flag.FlagSet) {
-	if err := flag.Parse(os.Args[2:]); err != nil {
-		log.Fatal(err)
-	}
-}
 
 // CmdLineOpts stores the options that are parsed.
 type CmdLineOpts struct {
@@ -48,29 +26,40 @@ func (c CmdLineOpts) ParseDate(dateString string) time.Time {
 	return date
 }
 
-// RunCLI parses the arguments and executes the associated action.
+// RunCLI parses the given args and executes the appropriate action.
 func RunCLI() {
-	opts := CmdLineOpts{}
 	todayStr := time.Now().UTC().Format("2006-01-02")
 
-	// The 'run-server' command.
-	cmdRunServer := flag.NewFlagSet("run-server", flag.ExitOnError)
-	cmdRunServer.IntVar(&opts.Port, "port", 8000, "Port to run the server on")
-
-	// The 'fetch-articles' command.
-	cmdFetchArticles := flag.NewFlagSet("fetch-articles", flag.ExitOnError)
-	cmdFetchArticles.StringVar(&opts.From, "from", todayStr, "Limit by PublishDate >=")
-	cmdFetchArticles.StringVar(&opts.To, "to", todayStr, "Limit by PublishDate <=")
-
-	if len(os.Args) < 2 {
-		PrintUsage(cmdRunServer, cmdFetchArticles)
+	opts := CmdLineOpts{
+		Port: 8000,
+		From: todayStr,
+		To:   todayStr,
 	}
 
-	switch os.Args[1] {
+	flaggy.SetName("dacabot")
+	flaggy.SetDescription("A news aggregator for DACA-related news")
 
-	case "run-server":
-		Parse(cmdRunServer)
+	// The 'run-server' subcommand.
+	cmdRunServer := flaggy.NewSubcommand("run-server")
+	cmdRunServer.Description = "Start the web application"
+	cmdRunServer.Int(&opts.Port, "p", "port", "Port to run the server on")
+	flaggy.AttachSubcommand(cmdRunServer, 1)
 
+	// The 'fetch-articles' subcommand.
+	cmdFetchArticles := flaggy.NewSubcommand("fetch-articles")
+	cmdFetchArticles.Description = "Fetch articles from news sources"
+	cmdFetchArticles.String(&opts.From, "f", "from", "Limit by PublishDate >=")
+	cmdFetchArticles.String(&opts.To, "t", "to", "Limit by PublishDate <=")
+	flaggy.AttachSubcommand(cmdFetchArticles, 1)
+
+	flaggy.Parse()
+
+	if len(os.Args) < 2 {
+		flaggy.ShowHelp("")
+		return
+	}
+
+	if cmdRunServer.Used {
 		// Setup server.
 		server := NewServer()
 		defer server.Cleanup()
@@ -80,16 +69,13 @@ func RunCLI() {
 
 		// Run server.
 		server.Run(opts.Port)
+	}
 
-	case "fetch-articles":
-		Parse(cmdFetchArticles)
+	if cmdFetchArticles.Used {
 		opts.FromDate = opts.ParseDate(opts.From)
 		opts.ToDate = opts.ParseDate(opts.To)
 
+		// Fetch articles.
 		UpdateArticles(opts.FromDate, opts.ToDate, true)
-
-	default:
-		fmt.Printf("Unknown command %v\n", os.Args[1])
-		os.Exit(1)
 	}
 }
