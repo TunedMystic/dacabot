@@ -61,10 +61,9 @@ func TestStatusHandler_Operational(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	http.HandlerFunc(s.statusHandler()).ServeHTTP(w, r)
+	doc := goqueryDoc(w.Body)
 
 	is.Equal(w.Code, http.StatusOK) // Status code
-
-	doc := goqueryDoc(w.Body)
 
 	websiteStatus := doc.Find(`p[data-status="website"]`).Text()
 	is.Equal(websiteStatus, "Operational") // Website status
@@ -96,10 +95,9 @@ func TestStatusHandler_Unresponsive(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	http.HandlerFunc(s.statusHandler()).ServeHTTP(w, r)
+	doc := goqueryDoc(w.Body)
 
 	is.Equal(w.Code, http.StatusOK) // Status code
-
-	doc := goqueryDoc(w.Body)
 
 	databaseStatus := doc.Find(`p[data-status="database"]`).Text()
 	is.Equal(databaseStatus, "Unresponsive") // Database status
@@ -216,7 +214,7 @@ func TestIndexHandler_PartialPage(t *testing.T) {
 	q.Add("fullpage", "false")
 	r.URL.RawQuery = q.Encode()
 
-	// The handler will render a partial page when `fullpage` is false.
+	// The handler will render a partial page when the `fullpage` query param is false.
 	// A partial page contains the articles as an HTML fragment, not a complete page.
 	http.HandlerFunc(s.indexHandler).ServeHTTP(w, r)
 	doc := goqueryDoc(w.Body)
