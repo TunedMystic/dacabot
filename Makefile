@@ -23,7 +23,7 @@ install:  ## Install project dependencies
 
 .PHONY: test
 test: ## Run tests
-	@go test ./app/...
+	@go test -v -cover ./app/...
 
 .PHONY: dev
 dev:  ## Run the program in dev mode.

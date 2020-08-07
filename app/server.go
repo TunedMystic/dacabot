@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -15,22 +16,39 @@ import (
 func NewServer() *Server {
 	s := Server{}
 	fmt.Println("[setup] templates")
-	s.Templates = template.Must(template.ParseGlob("templates/*.html"))
+	s.Templates = s.GetTemplates()
 
 	fmt.Println("[setup] database")
 	s.DB = NewDB()
 	s.DB.CreateTables()
 
 	fmt.Println("[setup] router")
-	s.Router = mux.NewRouter()
+	s.Router = s.GetRouter()
 	return &s
+}
+
+// GetTemplates sets up the templates.
+func (s *Server) GetTemplates() *template.Template {
+	templatePath := "templates/*.html"
+	templateFuncs := template.FuncMap{
+		"Slugify": func(s string) string {
+			return strings.ReplaceAll(strings.ToLower(s), " ", "-")
+		},
+	}
+
+	tmpl, err := template.New("").Funcs(templateFuncs).ParseGlob(templatePath)
+	if err != nil {
+		log.Fatalf("Could not parse templates: %v\n", err)
+	}
+
+	return tmpl
 }
 
 // Server contains all the dependencies for the application.
 type Server struct {
 	Templates *template.Template
 	Router    *mux.Router
-	DB        *ServerDB
+	DB        Database
 }
 
 // TemplateContext stores data to render templates with.
@@ -44,6 +62,7 @@ type TemplateContext struct {
 	PartialPage   bool
 }
 
+// StatusCheck stores data about a specific type of health check.
 type StatusCheck struct {
 	Name   string
 	Info   string
@@ -78,7 +97,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 		CurrentRoute:  r.URL.Path,
 	}
 
-	fmt.Printf("searchText: %v, before: %v, results: %v, moreResults: %v\n", searchText, beforePubDate, len(articles), moreResults)
+	// fmt.Printf("searchText: %v, before: %v, results: %v, moreResults: %v\n", searchText, beforePubDate, len(articles), moreResults)
 
 	// Render page.
 	if !fullPage {
@@ -113,7 +132,7 @@ func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) statusHandler() http.HandlerFunc {
-	fmt.Println("setting up the status handler") // this is just run once.
+	// fmt.Println("setting up the status handler") // this is just run once.
 	return func(w http.ResponseWriter, r *http.Request) {
 		webCheck := &StatusCheck{
 			Name:   "Website",
@@ -127,7 +146,7 @@ func (s *Server) statusHandler() http.HandlerFunc {
 			OK:     true,
 		}
 
-		err := s.DB.Checkhealth()
+		err := s.DB.CheckHealth()
 		if err != nil {
 			// http.Error(w, "Database health check failed", http.StatusInternalServerError)
 			dbCheck.Status = "Unresponsive"
@@ -174,19 +193,21 @@ func cookieMiddleWare(next http.Handler) http.Handler {
 	})
 }
 
-// Run sets up the routes and starts the server.
-func (s *Server) Run(port int) {
-	s.Router.HandleFunc("/", s.indexHandler).Methods("GET")
-	s.Router.HandleFunc("/recent", s.recentHandler).Methods("GET")
-	s.Router.HandleFunc("/about", s.aboutHandler).Methods("GET")
-	s.Router.HandleFunc("/status", s.statusHandler()).Methods("GET")
-	s.Router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	s.Router.Use(loggingMiddleware)
-	s.Router.Use(cookieMiddleWare)
+// GetRouter sets up the router.
+func (s *Server) GetRouter() *mux.Router {
+	router := mux.NewRouter()
+	router.HandleFunc("/", s.indexHandler).Methods("GET")
+	router.HandleFunc("/recent", s.recentHandler).Methods("GET")
+	router.HandleFunc("/about", s.aboutHandler).Methods("GET")
+	router.HandleFunc("/status", s.statusHandler()).Methods("GET")
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	router.Use(loggingMiddleware)
+	router.Use(cookieMiddleWare)
+	return router
 
-	addr := fmt.Sprintf("0.0.0.0:%v", port)
-	fmt.Printf("[run] starting Server on %v...\n", addr)
-	log.Fatal(http.ListenAndServe(addr, s.Router))
+	// addr := fmt.Sprintf("0.0.0.0:%v", port)
+	// fmt.Printf("[run] starting Server on %v...\n", addr)
+	// log.Fatal(http.ListenAndServe(addr, s.Router))
 }
 
 // Cleanup handles cleaning up the server resources.

@@ -9,7 +9,7 @@
 
     {{range .Articles}}
         <!-- Article -->
-        <div class="app-article flex flex-col sm:flex-row w-full rounded my-4 bg-gray-100 border border-gray-300 hvr-grow">
+        <div class="{{if .IsRecent}}app-recent-article{{else}}app-article{{end}} flex flex-col sm:flex-row w-full rounded my-4 bg-gray-100 border border-gray-300 hvr-grow">
             <div class="w-full sm:w-1/4">
                 <a class="flex" href="{{.URL}}" target="_blank">
                     <img
