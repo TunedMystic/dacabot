@@ -9,18 +9,6 @@ body {
     }
 }
 
-.highlight {
-    background: #fff18a;
-}
-
-.status-ok {
-    background: #88f1ad;
-}
-
-.max-w-80-rem {
-    max-width: 80rem;
-}
-
 .h-7p7 {
     height: 7.7rem;
 }
@@ -30,40 +18,6 @@ body {
     color: #2d3748 !important;
     transition: margin-top 50ms;
 }
-
-/*
-    Took these from the awesome Hover.css library.
-    Ref: https://ianlunn.github.io/Hover/
-*/
-.hvr-grow {
-    -webkit-transform: perspective(1px) translateZ(0);
-    transform: perspective(1px) translateZ(0);
-
-    -webkit-transition-duration: 0.10s;
-    transition-duration: 0.10s;
-
-    -webkit-transition-property: transform;
-    transition-property: transform;
-}
-
-.hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
-    -webkit-transform: scale(1.02);
-    transform: scale(1.02);
-}
-
-@media (max-width: 768px) {
-    .hvr-grow {
-        -webkit-transform: perspective(0px) translateZ(0);
-        transform: perspective(0px) translateZ(0);
-        -webkit-transition-property: none;
-        transition-property: none;
-    }
-    .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
-        -webkit-transform: none;
-        transform: none
-    }
-}
-
 
 .app-article-description:hover a {
     text-decoration: underline;
@@ -95,5 +49,39 @@ body {
 
     .app-article-badge:hover {
         background-color: #bfc9d4;
+    }
+}
+
+
+/*
+    Took these from the awesome Hover.css library.
+    Ref: https://ianlunn.github.io/Hover/
+*/
+.hvr-grow {
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+
+    -webkit-transition-duration: 0.10s;
+    transition-duration: 0.10s;
+
+    -webkit-transition-property: transform;
+    transition-property: transform;
+}
+
+.hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
+    -webkit-transform: scale(1.02);
+    transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+    .hvr-grow {
+        -webkit-transform: perspective(0px) translateZ(0);
+        transform: perspective(0px) translateZ(0);
+        -webkit-transition-property: none;
+        transition-property: none;
+    }
+    .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
+        -webkit-transform: none;
+        transform: none
     }
 }

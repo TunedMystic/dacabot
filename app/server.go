@@ -12,6 +12,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Version is the version of the application.
+const Version = "0.1.2"
+
 // NewServer creates a new Server and initializes resources.
 func NewServer() *Server {
 	s := Server{}
@@ -57,17 +60,10 @@ type TemplateContext struct {
 	SearchText    string
 	Pagination    bool
 	PubDateCursor string
-	CurrentRoute  string
-	StatusChecks  []*StatusCheck
 	PartialPage   bool
-}
-
-// StatusCheck stores data about a specific type of health check.
-type StatusCheck struct {
-	Name   string
-	Info   string
-	Status string
-	OK     bool
+	UpdatedAt     string
+	LastSync      string
+	Version       string
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -88,13 +84,17 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 	// Fetch articles.
 	articles, moreResults := s.DB.GetArticles(searchText, beforePubDate)
 
+	// Fetch tasklog.
+	tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
+
 	// Prepare template data.
 	data := TemplateContext{
 		Articles:      articles,
 		SearchText:    searchText,
 		Pagination:    moreResults,
 		PubDateCursor: earliestPubDate(articles),
-		CurrentRoute:  r.URL.Path,
+		LastSync:      tasklog.CompletedAtDisplay(),
+		Version:       Version,
 	}
 
 	// fmt.Printf("searchText: %v, before: %v, results: %v, moreResults: %v\n", searchText, beforePubDate, len(articles), moreResults)
@@ -112,6 +112,9 @@ func (s *Server) recentHandler(w http.ResponseWriter, r *http.Request) {
 	// Fetch articles.
 	articles := s.DB.GetRecentArticles()
 
+	// Fetch tasklog.
+	tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
+
 	// If there are no recent articles, then redirect to the index page.
 	if len(articles) == 0 {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -119,61 +122,39 @@ func (s *Server) recentHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Prepare template data.
 	data := TemplateContext{
-		Articles:     articles,
-		Pagination:   false,
-		CurrentRoute: r.URL.Path,
+		Articles:   articles,
+		Pagination: false,
+		LastSync:   tasklog.CompletedAtDisplay(),
+		Version:    Version,
 	}
 
 	s.Templates.ExecuteTemplate(w, "index", data)
 }
 
 func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
-	s.Templates.ExecuteTemplate(w, "about", TemplateContext{})
+	// Fetch tasklog.
+	tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
+
+	// Prepare template data.
+	data := TemplateContext{
+		LastSync: tasklog.CompletedAtDisplay(),
+		Version:  Version,
+	}
+
+	s.Templates.ExecuteTemplate(w, "about", data)
 }
 
-func (s *Server) statusHandler() http.HandlerFunc {
-	// fmt.Println("setting up the status handler") // this is just run once.
-	return func(w http.ResponseWriter, r *http.Request) {
-		webCheck := &StatusCheck{
-			Name:   "Website",
-			Status: "Operational",
-			OK:     true,
-		}
+func (s *Server) resourcesHandler(w http.ResponseWriter, r *http.Request) {
+	// Fetch tasklog.
+	tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
 
-		dbCheck := &StatusCheck{
-			Name:   "Database",
-			Status: "Operational",
-			OK:     true,
-		}
-
-		err := s.DB.CheckHealth()
-		if err != nil {
-			// http.Error(w, "Database health check failed", http.StatusInternalServerError)
-			dbCheck.Status = "Unresponsive"
-			dbCheck.OK = false
-		}
-
-		tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
-
-		syncCheck := &StatusCheck{
-			Name:   "Last Sync",
-			Info:   tasklog.CompletedAt.Format("January 02, 2006"),
-			Status: "Timely",
-			OK:     true,
-		}
-
-		if !tasklog.IsRecent() {
-			syncCheck.Status = "Outdated"
-			syncCheck.OK = false
-		}
-
-		// Prepare template data.
-		data := TemplateContext{
-			StatusChecks: []*StatusCheck{webCheck, dbCheck, syncCheck},
-		}
-
-		s.Templates.ExecuteTemplate(w, "status", data)
+	// Prepare the template data.
+	data := TemplateContext{
+		LastSync: tasklog.CompletedAtDisplay(),
+		Version:  Version,
 	}
+
+	s.Templates.ExecuteTemplate(w, "resources", data)
 }
 
 // Middleware used to log the request.
@@ -199,7 +180,7 @@ func (s *Server) GetRouter() *mux.Router {
 	router.HandleFunc("/", s.indexHandler).Methods("GET")
 	router.HandleFunc("/recent", s.recentHandler).Methods("GET")
 	router.HandleFunc("/about", s.aboutHandler).Methods("GET")
-	router.HandleFunc("/status", s.statusHandler()).Methods("GET")
+	router.HandleFunc("/resources", s.resourcesHandler).Methods("GET")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	router.Use(loggingMiddleware)
 	router.Use(cookieMiddleWare)

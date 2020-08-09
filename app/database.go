@@ -217,7 +217,6 @@ func (d *ServerDB) GetRecentTaskLog(task string) *TaskLog {
 
 	if err := d.db.Get(tasklog, sql, task); err != nil {
 		fmt.Printf("Could not fetch recent TaskLog: %v\n", err.Error())
-		return nil
 	}
 
 	return tasklog

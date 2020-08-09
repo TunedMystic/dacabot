@@ -1,19 +1,18 @@
 {{define "articles"}}
 
-        {{if .PartialPage}}
-            <div class="my-5 flex justify-center">
-                <img class="w-5 h-5 xmx-1 inline-block" src="/static/small-blue-diamond.png" alt="small-blue-diamond">
-                <img class="w-5 h-5 xmx-1 inline-block" src="/static/small-blue-diamond.png" alt="small-blue-diamond">
-            </div>
-        {{end}}
+    {{if .PartialPage}}
+        <div class="flex justify-center">
+            <hr class="w-full my-5 border-1 border-gray-400">
+        </div>
+    {{end}}
 
     {{range .Articles}}
         <!-- Article -->
-        <div class="{{if .IsRecent}}app-recent-article{{else}}app-article{{end}} flex flex-col sm:flex-row w-full rounded-md my-4 bg-gray-200 xborder xborder-gray-400 sm:bg-transparent sm:border-none hvr-grow">
+        <div class="{{if .IsRecent}}app-recent-article{{else}}app-article{{end}} flex flex-col sm:flex-row w-full rounded-md my-4 bg-gray-200 sm:bg-transparent sm:border-none hvr-grow">
             <div class="w-full sm:w-1/4">
                 <a class="flex" href="{{.URL}}" target="_blank">
                     <img
-                        class="w-full {{if .Description}}h-7p7{{else}}h-20{{end}} xrounded-tl xrounded-tr xsm:rounded-tl xsm:rounded-bl xsm:rounded-tr-none rounded-tl rounded-tr sm:rounded-md object-cover object-center"
+                        class="w-full {{if .Description}}h-7p7{{else}}h-20{{end}} rounded-tl rounded-tr sm:rounded-md object-cover object-center"
                         width="300"
                         loading="lazy"
                         alt="article-{{.ID}}-image"
@@ -21,18 +20,18 @@
                     >
                 </a>
             </div>
-            <div class="w-full sm:w-3/4 p-2 xpx-3 xpy-2 sm:pb-2 sm:pt-0 flex flex-col justify-between">
+            <div class="w-full sm:w-3/4 p-2 sm:pb-2 sm:pt-0 flex flex-col justify-between">
                 <!-- title and description -->
-                <div class="app-article-description">
+                <div class="app-article-description leading-tight">
                     <p class="font-semibold text-md">
                         <a class="hidden sm:block transition-colors duration-100 ease-in-out hover:text-gray-800" href="{{.URL}}" title="{{.Title}}" target="_blank">{{.DisplayTitle}}</a>
-                        <a class="block sm:hidden transition-colors duration-100 ease-in-out hover:text-gray-800 leading-tight" href="{{.URL}}" title="{{.Title}}" target="_blank">{{.Title}}</a>
+                        <a class="block sm:hidden transition-colors duration-100 ease-in-out hover:text-gray-800" href="{{.URL}}" title="{{.Title}}" target="_blank">{{.Title}}</a>
                     </p>
-                    <p class="text-sm sm:text-base text-gray-600 my-1 leading-tight">{{.DisplayDescription}}</p>
+                    <p class="text-sm sm:text-base text-gray-600 my-1">{{.DisplayDescription}}</p>
                 </div>
                 <!-- tags and published date -->
                 <div class="text-sm mt-3">
-                    <span class="inline-block mr-2 px-2 rounded-lg {{if .IsRecent}}xhover:bg-red-200 xbg-orange-300 app-recent-article-badge xbg-orange-300 text-orange-800{{else}}app-article-badge xbg-gray-400 text-gray-800 xsm:bg-gray-300 xhover:bg-gray-400{{end}}">
+                    <span class="inline-block mr-2 px-2 rounded-lg {{if .IsRecent}}app-recent-article-badge text-orange-800{{else}}app-article-badge text-gray-800{{end}}">
                         <a href="/?q={{.Source}}">#{{.Source}}</a>
                     </span>
                     <span class="text-gray-800">{{.DisplayPubDate}}</span>
