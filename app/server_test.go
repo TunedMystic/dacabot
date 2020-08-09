@@ -40,68 +40,6 @@ func goqueryDoc(r io.Reader) *goquery.Document {
 
 // ------------------------------------------------------------------
 
-// func TestStatusHandler_Operational(t *testing.T) {
-// 	is := is.New(t)
-
-// 	mockDB := &MockServerDB{
-// 		checkHealthMock: func() error {
-// 			return nil
-// 		},
-// 		getRecentTaskLogMock: func(task string) *TaskLog {
-// 			return &TaskLog{
-// 				ID:          1,
-// 				CompletedAt: MustParseDate("2020-01-15"),
-// 			}
-// 		},
-// 	}
-
-// 	s := newTestServer(mockDB)
-// 	r := httptest.NewRequest("GET", "/test", nil)
-// 	w := httptest.NewRecorder()
-
-// 	http.HandlerFunc(s.statusHandler()).ServeHTTP(w, r)
-// 	doc := goqueryDoc(w.Body)
-
-// 	is.Equal(w.Code, http.StatusOK) // Status code
-
-// 	websiteStatus := doc.Find(`p[data-status="website"]`).Text()
-// 	is.Equal(websiteStatus, "Operational") // Website status
-
-// 	databaseStatus := doc.Find(`p[data-status="database"]`).Text()
-// 	is.Equal(databaseStatus, "Operational") // Database status
-
-// 	lastSyncStatus := doc.Find(`p[data-status="last-sync"]`).Text()
-// 	is.Equal(lastSyncStatus, "Outdated") // Last sync status
-// }
-
-// func TestStatusHandler_Unresponsive(t *testing.T) {
-// 	is := is.New(t)
-
-// 	mockDB := &MockServerDB{
-// 		checkHealthMock: func() error {
-// 			return errors.New("db not ok")
-// 		},
-// 		getRecentTaskLogMock: func(task string) *TaskLog {
-// 			return &TaskLog{
-// 				ID:          1,
-// 				CompletedAt: MustParseDate("2020-01-15"),
-// 			}
-// 		},
-// 	}
-
-// 	s := newTestServer(mockDB)
-// 	r := httptest.NewRequest("GET", "/test", nil)
-// 	w := httptest.NewRecorder()
-
-// 	http.HandlerFunc(s.statusHandler()).ServeHTTP(w, r)
-// 	doc := goqueryDoc(w.Body)
-
-// 	is.Equal(w.Code, http.StatusOK) // Status code
-
-// 	databaseStatus := doc.Find(`p[data-status="database"]`).Text()
-// 	is.Equal(databaseStatus, "Unresponsive") // Database status
-// }
-
 func TestAboutHandler(t *testing.T) {
 	is := is.New(t)
 
