@@ -5,9 +5,7 @@ dacabot
 
 Dacabot is a news aggregator for DACA-related news.
 
-<img width="814" alt="Screen Shot 2020-08-02 at 4 02 32 AM" src="https://user-images.githubusercontent.com/6523726/89118631-0f3adf00-d475-11ea-8f9a-261b7eba90a3.png">
-
-<br />
+<img width="854" alt="dacabot-screen" src="https://user-images.githubusercontent.com/6523726/89728261-fa70c500-d9f9-11ea-9925-ad4bf3357386.png">
 
 ### Quickstart
 
