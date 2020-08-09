@@ -9,18 +9,6 @@ body {
     }
 }
 
-.highlight {
-    background: #fff18a;
-}
-
-.status-ok {
-    background: #88f1ad;
-}
-
-.max-w-80-rem {
-    max-width: 80rem;
-}
-
 .h-7p7 {
     height: 7.7rem;
 }
@@ -30,6 +18,40 @@ body {
     color: #2d3748 !important;
     transition: margin-top 50ms;
 }
+
+.app-article-description:hover a {
+    text-decoration: underline;
+}
+
+
+/* Article Badges */
+
+.app-recent-article-badge {
+    background-color: #fbd38d; /* orange-300 */
+}
+
+.app-recent-article-badge:hover {
+    background-color: #f9c975;
+}
+
+.app-article-badge {
+    background-color: #e2e8f0; /* gray-300 */
+}
+
+.app-article-badge:hover {
+    background-color: #cbd5e0; /* gray-400 */
+}
+
+@media (max-width: 768px) {
+    .app-article-badge {
+        background-color: #cbd5e0; /* gray-400 */
+    }
+
+    .app-article-badge:hover {
+        background-color: #bfc9d4;
+    }
+}
+
 
 /*
     Took these from the awesome Hover.css library.
@@ -62,9 +84,4 @@ body {
         -webkit-transform: none;
         transform: none
     }
-}
-
-
-.app-article-description:hover a {
-    text-decoration: underline;
 }

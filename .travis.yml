@@ -11,9 +11,9 @@ branches:
     - master
 
 cache:
-    directories:
-        - $HOME/.cache/go-build  # Build cache
-        - $HOME/gopath/pkg/mod   # Go modules
+  directories:
+    - $HOME/.cache/go-build  # Build cache
+    - $HOME/gopath/pkg/mod   # Go modules
 
 install: make install
 

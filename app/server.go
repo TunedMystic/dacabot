@@ -6,31 +6,52 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
 )
 
+// Version is the version of the application.
+const Version = "0.1.2"
+
 // NewServer creates a new Server and initializes resources.
 func NewServer() *Server {
 	s := Server{}
 	fmt.Println("[setup] templates")
-	s.Templates = template.Must(template.ParseGlob("templates/*.html"))
+	s.Templates = s.GetTemplates()
 
 	fmt.Println("[setup] database")
 	s.DB = NewDB()
 	s.DB.CreateTables()
 
 	fmt.Println("[setup] router")
-	s.Router = mux.NewRouter()
+	s.Router = s.GetRouter()
 	return &s
+}
+
+// GetTemplates sets up the templates.
+func (s *Server) GetTemplates() *template.Template {
+	templatePath := "templates/*.html"
+	templateFuncs := template.FuncMap{
+		"Slugify": func(s string) string {
+			return strings.ReplaceAll(strings.ToLower(s), " ", "-")
+		},
+	}
+
+	tmpl, err := template.New("").Funcs(templateFuncs).ParseGlob(templatePath)
+	if err != nil {
+		log.Fatalf("Could not parse templates: %v\n", err)
+	}
+
+	return tmpl
 }
 
 // Server contains all the dependencies for the application.
 type Server struct {
 	Templates *template.Template
 	Router    *mux.Router
-	DB        *ServerDB
+	DB        Database
 }
 
 // TemplateContext stores data to render templates with.
@@ -39,16 +60,10 @@ type TemplateContext struct {
 	SearchText    string
 	Pagination    bool
 	PubDateCursor string
-	CurrentRoute  string
-	StatusChecks  []*StatusCheck
 	PartialPage   bool
-}
-
-type StatusCheck struct {
-	Name   string
-	Info   string
-	Status string
-	OK     bool
+	UpdatedAt     string
+	LastSync      string
+	Version       string
 }
 
 func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -69,16 +84,20 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 	// Fetch articles.
 	articles, moreResults := s.DB.GetArticles(searchText, beforePubDate)
 
+	// Fetch tasklog.
+	tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
+
 	// Prepare template data.
 	data := TemplateContext{
 		Articles:      articles,
 		SearchText:    searchText,
 		Pagination:    moreResults,
 		PubDateCursor: earliestPubDate(articles),
-		CurrentRoute:  r.URL.Path,
+		LastSync:      tasklog.CompletedAtDisplay(),
+		Version:       Version,
 	}
 
-	fmt.Printf("searchText: %v, before: %v, results: %v, moreResults: %v\n", searchText, beforePubDate, len(articles), moreResults)
+	// fmt.Printf("searchText: %v, before: %v, results: %v, moreResults: %v\n", searchText, beforePubDate, len(articles), moreResults)
 
 	// Render page.
 	if !fullPage {
@@ -93,6 +112,9 @@ func (s *Server) recentHandler(w http.ResponseWriter, r *http.Request) {
 	// Fetch articles.
 	articles := s.DB.GetRecentArticles()
 
+	// Fetch tasklog.
+	tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
+
 	// If there are no recent articles, then redirect to the index page.
 	if len(articles) == 0 {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -100,61 +122,39 @@ func (s *Server) recentHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Prepare template data.
 	data := TemplateContext{
-		Articles:     articles,
-		Pagination:   false,
-		CurrentRoute: r.URL.Path,
+		Articles:   articles,
+		Pagination: false,
+		LastSync:   tasklog.CompletedAtDisplay(),
+		Version:    Version,
 	}
 
 	s.Templates.ExecuteTemplate(w, "index", data)
 }
 
 func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
-	s.Templates.ExecuteTemplate(w, "about", TemplateContext{})
+	// Fetch tasklog.
+	tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
+
+	// Prepare template data.
+	data := TemplateContext{
+		LastSync: tasklog.CompletedAtDisplay(),
+		Version:  Version,
+	}
+
+	s.Templates.ExecuteTemplate(w, "about", data)
 }
 
-func (s *Server) statusHandler() http.HandlerFunc {
-	fmt.Println("setting up the status handler") // this is just run once.
-	return func(w http.ResponseWriter, r *http.Request) {
-		webCheck := &StatusCheck{
-			Name:   "Website",
-			Status: "Operational",
-			OK:     true,
-		}
+func (s *Server) resourcesHandler(w http.ResponseWriter, r *http.Request) {
+	// Fetch tasklog.
+	tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
 
-		dbCheck := &StatusCheck{
-			Name:   "Database",
-			Status: "Operational",
-			OK:     true,
-		}
-
-		err := s.DB.Checkhealth()
-		if err != nil {
-			// http.Error(w, "Database health check failed", http.StatusInternalServerError)
-			dbCheck.Status = "Unresponsive"
-			dbCheck.OK = false
-		}
-
-		tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
-
-		syncCheck := &StatusCheck{
-			Name:   "Last Sync",
-			Info:   tasklog.CompletedAt.Format("January 02, 2006"),
-			Status: "Timely",
-			OK:     true,
-		}
-
-		if !tasklog.IsRecent() {
-			syncCheck.Status = "Outdated"
-			syncCheck.OK = false
-		}
-
-		// Prepare template data.
-		data := TemplateContext{
-			StatusChecks: []*StatusCheck{webCheck, dbCheck, syncCheck},
-		}
-
-		s.Templates.ExecuteTemplate(w, "status", data)
+	// Prepare the template data.
+	data := TemplateContext{
+		LastSync: tasklog.CompletedAtDisplay(),
+		Version:  Version,
 	}
+
+	s.Templates.ExecuteTemplate(w, "resources", data)
 }
 
 // Middleware used to log the request.
@@ -174,19 +174,21 @@ func cookieMiddleWare(next http.Handler) http.Handler {
 	})
 }
 
-// Run sets up the routes and starts the server.
-func (s *Server) Run(port int) {
-	s.Router.HandleFunc("/", s.indexHandler).Methods("GET")
-	s.Router.HandleFunc("/recent", s.recentHandler).Methods("GET")
-	s.Router.HandleFunc("/about", s.aboutHandler).Methods("GET")
-	s.Router.HandleFunc("/status", s.statusHandler()).Methods("GET")
-	s.Router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	s.Router.Use(loggingMiddleware)
-	s.Router.Use(cookieMiddleWare)
+// GetRouter sets up the router.
+func (s *Server) GetRouter() *mux.Router {
+	router := mux.NewRouter()
+	router.HandleFunc("/", s.indexHandler).Methods("GET")
+	router.HandleFunc("/recent", s.recentHandler).Methods("GET")
+	router.HandleFunc("/about", s.aboutHandler).Methods("GET")
+	router.HandleFunc("/resources", s.resourcesHandler).Methods("GET")
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	router.Use(loggingMiddleware)
+	router.Use(cookieMiddleWare)
+	return router
 
-	addr := fmt.Sprintf("0.0.0.0:%v", port)
-	fmt.Printf("[run] starting Server on %v...\n", addr)
-	log.Fatal(http.ListenAndServe(addr, s.Router))
+	// addr := fmt.Sprintf("0.0.0.0:%v", port)
+	// fmt.Printf("[run] starting Server on %v...\n", addr)
+	// log.Fatal(http.ListenAndServe(addr, s.Router))
 }
 
 // Cleanup handles cleaning up the server resources.

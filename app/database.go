@@ -8,11 +8,28 @@ import (
 	_ "github.com/mattn/go-sqlite3" // sqlite
 )
 
+type Database interface {
+	Close() error
+	CheckHealth() error
+	CreateTables()
+
+	// Articles
+	GetArticles(q, pubDate string) ([]*Article, bool)
+	GetRecentArticles() []*Article
+	InsertArticle(article *Article) (int, error)
+	InsertArticles(articles []*Article) []int
+
+	// TaskLog
+	GetRecentTaskLog(task string) *TaskLog
+	InsertTaskLog(tasklog *TaskLog) (int, error)
+	RecordTask(task string, manual bool)
+}
+
 // PageSize is used to page results from various tables.
 const PageSize int = 6
 
 // NewDB creates a new *ServerDB.
-func NewDB() *ServerDB {
+func NewDB() Database {
 	db, err := sqlx.Open("sqlite3", "./dacabot.sqlite")
 	if err != nil {
 		panic(err)
@@ -33,12 +50,12 @@ type ServerDB struct {
 }
 
 // Close the db.
-func (d *ServerDB) Close() {
-	d.db.Close()
+func (d *ServerDB) Close() error {
+	return d.db.Close()
 }
 
-// Checkhealth performs a db ping.
-func (d *ServerDB) Checkhealth() error {
+// CheckHealth performs a db ping.
+func (d *ServerDB) CheckHealth() error {
 	return d.db.Ping()
 }
 
@@ -194,16 +211,12 @@ func (d *ServerDB) GetRecentTaskLog(task string) *TaskLog {
 	tasklog := &TaskLog{}
 	sql := `
 		SELECT * FROM tasklog
-		WHERE (
-			manual = FALSE AND
-			task = ?
-		)
+		WHERE task = ?
 		ORDER BY completed_at DESC
 		LIMIT 1;`
 
 	if err := d.db.Get(tasklog, sql, task); err != nil {
 		fmt.Printf("Could not fetch recent TaskLog: %v\n", err.Error())
-		return nil
 	}
 
 	return tasklog
