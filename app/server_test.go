@@ -40,7 +40,7 @@ func goqueryDoc(r io.Reader) *goquery.Document {
 
 // ------------------------------------------------------------------
 
-func TestAboutHandler(t *testing.T) {
+func Test_AboutHandler(t *testing.T) {
 	is := is.New(t)
 
 	mockDB := &MockServerDB{
@@ -58,7 +58,7 @@ func TestAboutHandler(t *testing.T) {
 	is.Equal(w.Code, http.StatusOK) // Status code
 }
 
-func TestResourcesHandler(t *testing.T) {
+func Test_ResourcesHandler(t *testing.T) {
 	is := is.New(t)
 
 	mockDB := &MockServerDB{
@@ -76,7 +76,7 @@ func TestResourcesHandler(t *testing.T) {
 	is.Equal(w.Code, http.StatusOK) // Status code
 }
 
-func TestRecentHandler(t *testing.T) {
+func Test_RecentHandler(t *testing.T) {
 	is := is.New(t)
 
 	pubDate := time.Now().AddDate(0, 0, -1)
@@ -104,7 +104,7 @@ func TestRecentHandler(t *testing.T) {
 	is.Equal(recentArticles, 2) // Two recent articles rendered
 }
 
-func TestRecentHandler_NoRecentArticles(t *testing.T) {
+func Test_RecentHandler_NoRecentArticles(t *testing.T) {
 	is := is.New(t)
 
 	mockDB := &MockServerDB{
@@ -129,7 +129,7 @@ func TestRecentHandler_NoRecentArticles(t *testing.T) {
 	is.True(noResults) // No results div
 }
 
-func TestIndexHandler(t *testing.T) {
+func Test_IndexHandler(t *testing.T) {
 	is := is.New(t)
 
 	mockDB := &MockServerDB{
@@ -156,7 +156,7 @@ func TestIndexHandler(t *testing.T) {
 	is.Equal(articles, 3) // Three articles rendered
 }
 
-func TestIndexHandler_PartialPage(t *testing.T) {
+func Test_IndexHandler_PartialPage(t *testing.T) {
 	is := is.New(t)
 
 	mockDB := &MockServerDB{

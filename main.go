@@ -20,6 +20,15 @@ type CmdLineOpts struct {
 	ToDate   time.Time
 }
 
+// MustParseDate accepts a date string and returns a time.Time value.
+func (c CmdLineOpts) MustParseDate(dateString string) time.Time {
+	date, err := time.Parse("2006-01-02", dateString)
+	if err != nil {
+		log.Fatalf("Could not convert %v to a date.\n", dateString)
+	}
+	return date
+}
+
 // RunCLI parses the given args and executes the appropriate action.
 func RunCLI() {
 	todayStr := time.Now().UTC().Format("2006-01-02")
@@ -68,8 +77,8 @@ func RunCLI() {
 	}
 
 	if cmdFetchArticles.Used {
-		opts.FromDate = app.MustParseDate(opts.From)
-		opts.ToDate = app.MustParseDate(opts.To)
+		opts.FromDate = opts.MustParseDate(opts.From)
+		opts.ToDate = opts.MustParseDate(opts.To)
 
 		// Fetch articles.
 		app.UpdateArticles(opts.FromDate, opts.ToDate, true)

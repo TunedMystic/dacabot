@@ -8,7 +8,7 @@ import (
 	"github.com/matryer/is"
 )
 
-func TestArticle_TitleDisplay(t *testing.T) {
+func Test_Article_TitleDisplay(t *testing.T) {
 	is := is.New(t)
 
 	article := Article{}
@@ -17,7 +17,7 @@ func TestArticle_TitleDisplay(t *testing.T) {
 	is.Equal(article.TitleDisplay(), "Some title here") // Display title, normal length
 }
 
-func TestArticle_TitleDisplay_Truncated(t *testing.T) {
+func Test_Article_TitleDisplay_Truncated(t *testing.T) {
 	is := is.New(t)
 
 	article := Article{}
@@ -32,7 +32,7 @@ func TestArticle_TitleDisplay_Truncated(t *testing.T) {
 	is.True(strings.HasSuffix(article.TitleDisplay(), "..."))
 }
 
-func TestArticle_DescriptionDisplay(t *testing.T) {
+func Test_Article_DescriptionDisplay(t *testing.T) {
 	is := is.New(t)
 
 	article := Article{}
@@ -41,7 +41,7 @@ func TestArticle_DescriptionDisplay(t *testing.T) {
 	is.Equal(article.DescriptionDisplay(), "Some description here")
 }
 
-func TestArticle_DescriptionDisplay_Truncated(t *testing.T) {
+func Test_Article_DescriptionDisplay_Truncated(t *testing.T) {
 	is := is.New(t)
 
 	article := Article{}
@@ -57,7 +57,7 @@ func TestArticle_DescriptionDisplay_Truncated(t *testing.T) {
 	is.True(strings.HasSuffix(article.DescriptionDisplay(), "..."))
 }
 
-func TestArticle_IsRecent(t *testing.T) {
+func Test_Article_IsRecent(t *testing.T) {
 	is := is.New(t)
 
 	now := time.Now().UTC()
@@ -66,13 +66,10 @@ func TestArticle_IsRecent(t *testing.T) {
 		time.Hour*-time.Duration(72) - time.Minute*-time.Duration(1), // -3 days
 	)
 
-	t.Logf("Now: %v\n", now.Format(time.RFC3339))
-	t.Logf("Pub: %v\n", article.PublishedAt.Format(time.RFC3339))
-
 	is.True(article.IsRecent()) // Article is recent
 }
 
-func TestArticle_IsRecent_Fail(t *testing.T) {
+func Test_Article_IsRecent_Fail(t *testing.T) {
 	is := is.New(t)
 
 	now := time.Now().UTC()
@@ -81,13 +78,10 @@ func TestArticle_IsRecent_Fail(t *testing.T) {
 		time.Hour * -time.Duration(73), // -3 days, 1 hour
 	)
 
-	t.Logf("Now: %v\n", now.Format(time.RFC3339))
-	t.Logf("Pub: %v\n", article.PublishedAt.Format(time.RFC3339))
-
 	is.Equal(article.IsRecent(), false) // Article is not recent
 }
 
-func TestArticle_PubDateDisplay(t *testing.T) {
+func Test_Article_PubDateDisplay(t *testing.T) {
 	is := is.New(t)
 
 	now := time.Now().UTC()
@@ -107,7 +101,7 @@ func TestArticle_PubDateDisplay(t *testing.T) {
 	is.Equal(article.PubDateDisplay(), expectedPublishedAt) // Published at specific date.
 }
 
-func TestArticles_EarliestPubDate(t *testing.T) {
+func Test_Articles_EarliestPubDate(t *testing.T) {
 	is := is.New(t)
 	date := time.Date(2020, 5, 4, 0, 0, 0, 0, time.UTC) // May 4, 2020
 
@@ -120,21 +114,21 @@ func TestArticles_EarliestPubDate(t *testing.T) {
 	is.Equal(earliestPubDate(articles), "2020-07-04 00:00:00") // Earliest PubDate is April 4, 2020
 }
 
-func TestArticles_EarliestPubDate_Empty(t *testing.T) {
+func Test_Articles_EarliestPubDate_Empty(t *testing.T) {
 	is := is.New(t)
 	articles := []*Article{}
 
 	is.Equal(earliestPubDate(articles), "") // Earliest PubDate is empty
 }
 
-func TestTaskLog_CompletedAtDisplay_Never(t *testing.T) {
+func Test_TaskLog_CompletedAtDisplay_Never(t *testing.T) {
 	is := is.New(t)
 	tasklog := TaskLog{}
 
 	is.Equal(tasklog.CompletedAtDisplay(), "Never") // Never completed
 }
 
-func TestTaskLog_CompletedAtDisplay(t *testing.T) {
+func Test_TaskLog_CompletedAtDisplay(t *testing.T) {
 	is := is.New(t)
 	tasklog := TaskLog{
 		CompletedAt: time.Date(2020, 7, 23, 0, 0, 0, 0, time.UTC),
