@@ -10,7 +10,6 @@ import (
 
 type Database interface {
 	Close() error
-	CheckHealth() error
 	CreateTables()
 
 	// Articles
@@ -52,11 +51,6 @@ type ServerDB struct {
 // Close the db.
 func (d *ServerDB) Close() error {
 	return d.db.Close()
-}
-
-// CheckHealth performs a db ping.
-func (d *ServerDB) CheckHealth() error {
-	return d.db.Ping()
 }
 
 // CreateTables for the application.

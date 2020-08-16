@@ -3,7 +3,6 @@ package app
 import (
 	"fmt"
 	"math"
-	"strings"
 	"time"
 )
 
@@ -25,27 +24,11 @@ type Article struct {
 }
 
 func (a *Article) DisplayTitle() string {
-	title := strings.Split(a.Title, "|")[0]
-	return trimText(title, 62)
+	return TrimText(a.Title, 62)
 }
 
 func (a *Article) DisplayDescription() string {
-	htmlTags := []string{"<ol>", "</ol>", "<ul>", "</ul>", "<li>", "</li>"}
-	description := a.Description
-	for _, tag := range htmlTags {
-		description = strings.ReplaceAll(description, tag, "")
-	}
-	return trimText(description, 130)
-}
-
-func (a *Article) getPublishedAtDifference() float64 {
-	now := time.Now().UTC()
-	return now.Sub(a.PublishedAt).Hours() / 24
-}
-
-func (a *Article) IsRecent() bool {
-	daysDiff := a.getPublishedAtDifference()
-	return daysDiff <= float64(RecentArticleThreshold)
+	return TrimText(a.Description, 130)
 }
 
 func (a *Article) DisplayPubDate() string {
@@ -62,14 +45,14 @@ func (a *Article) DisplayPubDate() string {
 	return a.PublishedAt.Format("Jan 02, 2006")
 }
 
-func trimText(text string, truncLength int) string {
-	if len(text) > truncLength {
-		// Split string by rune.
-		// Ref: https://stackoverflow.com/a/46416046
-		// TODO: Not the best solution. Consider Adrian's approach in the SO answer.
-		return string([]rune(text)[:truncLength-3]) + "..."
-	}
-	return text
+func (a *Article) IsRecent() bool {
+	daysDiff := a.getPublishedAtDifference()
+	return daysDiff <= float64(RecentArticleThreshold)
+}
+
+func (a *Article) getPublishedAtDifference() float64 {
+	now := time.Now().UTC()
+	return now.Sub(a.PublishedAt).Hours() / 24
 }
 
 func earliestPubDate(aa []*Article) string {
@@ -80,7 +63,7 @@ func earliestPubDate(aa []*Article) string {
 	return aa[len(aa)-1].PublishedAt.Format("2006-01-02 15:04:05")
 }
 
-// TaskLog keeps a record of varios tasks being run.
+// TaskLog keeps a record of various tasks being run.
 type TaskLog struct {
 	ID          int       `db:"id"`
 	Task        string    `db:"task"`

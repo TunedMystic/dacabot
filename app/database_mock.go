@@ -24,11 +24,6 @@ func (mc *MockServerDB) Close() error {
 	return mc.closeMock()
 }
 
-// CheckHealth is exported
-func (mc *MockServerDB) CheckHealth() error {
-	return mc.checkHealthMock()
-}
-
 // CreateTables is exported
 func (mc *MockServerDB) CreateTables() {
 	// We don't need to return anything since there's no return value.
