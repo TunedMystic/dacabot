@@ -24,17 +24,17 @@
                 <!-- title and description -->
                 <div class="app-article-description leading-tight">
                     <p class="font-semibold text-md">
-                        <a class="hidden sm:block transition-colors duration-100 ease-in-out hover:text-gray-800" href="{{.URL}}" title="{{.Title}}" target="_blank">{{.DisplayTitle}}</a>
+                        <a class="hidden sm:block transition-colors duration-100 ease-in-out hover:text-gray-800" href="{{.URL}}" title="{{.Title}}" target="_blank">{{.TitleDisplay}}</a>
                         <a class="block sm:hidden transition-colors duration-100 ease-in-out hover:text-gray-800" href="{{.URL}}" title="{{.Title}}" target="_blank">{{.Title}}</a>
                     </p>
-                    <p class="text-sm sm:text-base text-gray-600 my-1">{{.DisplayDescription}}</p>
+                    <p class="text-sm sm:text-base text-gray-600 my-1">{{.DescriptionDisplay}}</p>
                 </div>
                 <!-- tags and published date -->
                 <div class="text-sm mt-3">
                     <span class="inline-block mr-2 px-2 rounded-lg {{if .IsRecent}}app-recent-article-badge text-orange-800{{else}}app-article-badge text-gray-800{{end}}">
                         <a href="/?q={{.Source}}">#{{.Source}}</a>
                     </span>
-                    <span class="text-gray-800">{{.DisplayPubDate}}</span>
+                    <span class="text-gray-800">{{.PubDateDisplay}}</span>
                 </div>
             </div>
         </div>

@@ -53,7 +53,7 @@ func TestAboutHandler(t *testing.T) {
 	r := httptest.NewRequest("GET", "/test", nil)
 	w := httptest.NewRecorder()
 
-	http.HandlerFunc(s.aboutHandler).ServeHTTP(w, r)
+	http.HandlerFunc(s.AboutHandler).ServeHTTP(w, r)
 
 	is.Equal(w.Code, http.StatusOK) // Status code
 }
@@ -71,7 +71,7 @@ func TestResourcesHandler(t *testing.T) {
 	r := httptest.NewRequest("GET", "/test", nil)
 	w := httptest.NewRecorder()
 
-	http.HandlerFunc(s.resourcesHandler).ServeHTTP(w, r)
+	http.HandlerFunc(s.ResourcesHandler).ServeHTTP(w, r)
 
 	is.Equal(w.Code, http.StatusOK) // Status code
 }
@@ -95,7 +95,7 @@ func TestRecentHandler(t *testing.T) {
 	r := httptest.NewRequest("GET", "/test", nil)
 	w := httptest.NewRecorder()
 
-	http.HandlerFunc(s.recentHandler).ServeHTTP(w, r)
+	http.HandlerFunc(s.RecentHandler).ServeHTTP(w, r)
 	doc := goqueryDoc(w.Body)
 
 	is.Equal(w.Code, http.StatusOK) // Status code
@@ -120,7 +120,7 @@ func TestRecentHandler_NoRecentArticles(t *testing.T) {
 
 	// When there are no recent articles, then
 	// the handler should redirect to "/".
-	http.HandlerFunc(s.recentHandler).ServeHTTP(w, r)
+	http.HandlerFunc(s.RecentHandler).ServeHTTP(w, r)
 	doc := goqueryDoc(w.Body)
 
 	is.Equal(w.Code, http.StatusSeeOther) // Status code
@@ -147,7 +147,7 @@ func TestIndexHandler(t *testing.T) {
 	r := httptest.NewRequest("GET", "/test", nil)
 	w := httptest.NewRecorder()
 
-	http.HandlerFunc(s.indexHandler).ServeHTTP(w, r)
+	http.HandlerFunc(s.IndexHandler).ServeHTTP(w, r)
 	doc := goqueryDoc(w.Body)
 
 	is.Equal(w.Code, http.StatusOK) // Status code
@@ -181,7 +181,7 @@ func TestIndexHandler_PartialPage(t *testing.T) {
 
 	// The handler will render a partial page when the `fullpage` query param is false.
 	// A partial page contains the articles as an HTML fragment, not a complete page.
-	http.HandlerFunc(s.indexHandler).ServeHTTP(w, r)
+	http.HandlerFunc(s.IndexHandler).ServeHTTP(w, r)
 	doc := goqueryDoc(w.Body)
 
 	is.Equal(w.Code, http.StatusOK) // Status code

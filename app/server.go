@@ -66,7 +66,9 @@ type TemplateContext struct {
 	Version       string
 }
 
-func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
+// IndexHandler renders the index page with search results. This handler
+// can also render fragments of search results, to be appended to the full index page.
+func (s *Server) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// Get query params and normalize.
 	searchText := r.URL.Query().Get("q")
 
@@ -108,7 +110,8 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 	s.Templates.ExecuteTemplate(w, "index", data)
 }
 
-func (s *Server) recentHandler(w http.ResponseWriter, r *http.Request) {
+// RecentHandler renders the recent articles page.
+func (s *Server) RecentHandler(w http.ResponseWriter, r *http.Request) {
 	// Fetch articles.
 	articles := s.DB.GetRecentArticles()
 
@@ -131,7 +134,8 @@ func (s *Server) recentHandler(w http.ResponseWriter, r *http.Request) {
 	s.Templates.ExecuteTemplate(w, "index", data)
 }
 
-func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
+// AboutHandler renders the about page.
+func (s *Server) AboutHandler(w http.ResponseWriter, r *http.Request) {
 	// Fetch tasklog.
 	tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
 
@@ -144,7 +148,8 @@ func (s *Server) aboutHandler(w http.ResponseWriter, r *http.Request) {
 	s.Templates.ExecuteTemplate(w, "about", data)
 }
 
-func (s *Server) resourcesHandler(w http.ResponseWriter, r *http.Request) {
+// ResourcesHandler renders the resources page.
+func (s *Server) ResourcesHandler(w http.ResponseWriter, r *http.Request) {
 	// Fetch tasklog.
 	tasklog := s.DB.GetRecentTaskLog(TaskUpdateArticles)
 
@@ -177,10 +182,10 @@ func cookieMiddleWare(next http.Handler) http.Handler {
 // GetRouter sets up the router.
 func (s *Server) GetRouter() *mux.Router {
 	router := mux.NewRouter()
-	router.HandleFunc("/", s.indexHandler).Methods("GET")
-	router.HandleFunc("/recent", s.recentHandler).Methods("GET")
-	router.HandleFunc("/about", s.aboutHandler).Methods("GET")
-	router.HandleFunc("/resources", s.resourcesHandler).Methods("GET")
+	router.HandleFunc("/", s.IndexHandler).Methods("GET")
+	router.HandleFunc("/recent", s.RecentHandler).Methods("GET")
+	router.HandleFunc("/about", s.AboutHandler).Methods("GET")
+	router.HandleFunc("/resources", s.ResourcesHandler).Methods("GET")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	router.Use(loggingMiddleware)
 	router.Use(cookieMiddleWare)

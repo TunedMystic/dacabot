@@ -23,15 +23,18 @@ type Article struct {
 	CreatedAt   time.Time `db:"created_at"`
 }
 
-func (a *Article) DisplayTitle() string {
+// TitleDisplay returns a suitable Title string.
+func (a *Article) TitleDisplay() string {
 	return TrimText(a.Title, 62)
 }
 
-func (a *Article) DisplayDescription() string {
+// DescriptionDisplay returns a suitable Description string.
+func (a *Article) DescriptionDisplay() string {
 	return TrimText(a.Description, 130)
 }
 
-func (a *Article) DisplayPubDate() string {
+// PubDateDisplay returns a suitable PublishedAt string.
+func (a *Article) PubDateDisplay() string {
 	daysDiff := int(math.Round(a.getPublishedAtDifference()))
 	if daysDiff == 0 {
 		return "Today"
@@ -45,6 +48,7 @@ func (a *Article) DisplayPubDate() string {
 	return a.PublishedAt.Format("Jan 02, 2006")
 }
 
+// IsRecent determines if the article is recent by looking at its PublishedAt value.
 func (a *Article) IsRecent() bool {
 	daysDiff := a.getPublishedAtDifference()
 	return daysDiff <= float64(RecentArticleThreshold)
@@ -71,6 +75,7 @@ type TaskLog struct {
 	CompletedAt time.Time `db:"completed_at"`
 }
 
+// CompletedAtDisplay returns a suitable CompletedAt string.
 func (t *TaskLog) CompletedAtDisplay() string {
 	if t.CompletedAt.Year() == 1 {
 		return "Never"

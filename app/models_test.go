@@ -8,16 +8,16 @@ import (
 	"github.com/matryer/is"
 )
 
-func TestArticle_DisplayTitle(t *testing.T) {
+func TestArticle_TitleDisplay(t *testing.T) {
 	is := is.New(t)
 
 	article := Article{}
 	article.Title = "Some title here"
 
-	is.Equal(article.DisplayTitle(), "Some title here") // Display title, normal length
+	is.Equal(article.TitleDisplay(), "Some title here") // Display title, normal length
 }
 
-func TestArticle_DisplayTitle_Truncated(t *testing.T) {
+func TestArticle_TitleDisplay_Truncated(t *testing.T) {
 	is := is.New(t)
 
 	article := Article{}
@@ -28,20 +28,20 @@ func TestArticle_DisplayTitle_Truncated(t *testing.T) {
 		"Some title here " +
 		"Some title here ") // 80 chars
 
-	is.Equal(len(article.DisplayTitle()), 62) // Display title, truncated length
-	is.True(strings.HasSuffix(article.DisplayTitle(), "..."))
+	is.Equal(len(article.TitleDisplay()), 62) // Display title, truncated length
+	is.True(strings.HasSuffix(article.TitleDisplay(), "..."))
 }
 
-func TestArticle_DisplayDescription(t *testing.T) {
+func TestArticle_DescriptionDisplay(t *testing.T) {
 	is := is.New(t)
 
 	article := Article{}
 	article.Description = "Some description here"
 
-	is.Equal(article.DisplayDescription(), "Some description here")
+	is.Equal(article.DescriptionDisplay(), "Some description here")
 }
 
-func TestArticle_DisplayDescription_Truncated(t *testing.T) {
+func TestArticle_DescriptionDisplay_Truncated(t *testing.T) {
 	is := is.New(t)
 
 	article := Article{}
@@ -53,8 +53,8 @@ func TestArticle_DisplayDescription_Truncated(t *testing.T) {
 		"Some description here " +
 		"Some description here ") // 132 chars
 
-	is.Equal(len(article.DisplayDescription()), 130) // Display description, truncated length
-	is.True(strings.HasSuffix(article.DisplayDescription(), "..."))
+	is.Equal(len(article.DescriptionDisplay()), 130) // Display description, truncated length
+	is.True(strings.HasSuffix(article.DescriptionDisplay(), "..."))
 }
 
 func TestArticle_IsRecent(t *testing.T) {
@@ -87,24 +87,24 @@ func TestArticle_IsRecent_Fail(t *testing.T) {
 	is.Equal(article.IsRecent(), false) // Article is not recent
 }
 
-func TestArticle_DisplayPubDate(t *testing.T) {
+func TestArticle_PubDateDisplay(t *testing.T) {
 	is := is.New(t)
 
 	now := time.Now().UTC()
 	article := Article{}
 
 	article.PublishedAt = now
-	is.Equal(article.DisplayPubDate(), "Today") // Published today
+	is.Equal(article.PubDateDisplay(), "Today") // Published today
 
 	article.PublishedAt = now.AddDate(0, 0, -1)
-	is.Equal(article.DisplayPubDate(), "1 day ago") // Published 1 day ago
+	is.Equal(article.PubDateDisplay(), "1 day ago") // Published 1 day ago
 
 	article.PublishedAt = now.AddDate(0, 0, -7)
-	is.Equal(article.DisplayPubDate(), "7 days ago") // Published 7 days ago
+	is.Equal(article.PubDateDisplay(), "7 days ago") // Published 7 days ago
 
 	article.PublishedAt = now.AddDate(0, 0, -8)
 	expectedPublishedAt := article.PublishedAt.Format("Jan 02, 2006")
-	is.Equal(article.DisplayPubDate(), expectedPublishedAt) // Published at specific date.
+	is.Equal(article.PubDateDisplay(), expectedPublishedAt) // Published at specific date.
 }
 
 func TestArticles_EarliestPubDate(t *testing.T) {
