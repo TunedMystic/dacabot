@@ -28,13 +28,13 @@ type Database interface {
 const PageSize int = 6
 
 // NewDB creates a new *ServerDB.
-func NewDB() Database {
-	db, err := sqlx.Open("sqlite3", "./dacabot.sqlite")
-	if err != nil {
-		panic(err)
+func NewDB(dbName string) Database {
+	if dbName == "" {
+		dbName = "./dacabot.sqlite"
 	}
+	db := sqlx.MustOpen("sqlite3", dbName)
 
-	err = db.Ping()
+	err := db.Ping()
 	if err != nil {
 		panic(err)
 	}
@@ -215,3 +215,25 @@ func (d *ServerDB) GetRecentTaskLog(task string) *TaskLog {
 
 	return tasklog
 }
+
+// type getArticlesFunc func(db *sql.DB, q, pubDate string) ([]*Article, bool)
+
+// var PerformGetArticles getArticlesFunc = func(db *sql.DB, q, pubDate string) ([]*Article, bool) {
+// 	articles := []*Article{
+// 		{Title: "Article 1"},
+// 	}
+// 	return articles, true
+// }
+
+// func GetArticles(db *sql.DB, q, pubDate string) ([]*Article, bool) {
+// 	return PerformGetArticles(db, q, pubDate)
+// }
+
+// func TestGetArticles() {
+// 	db.PerformGetArticles = func(db *sql.DB, q, pubDate string) ([]*Article, bool) {
+// 		articles := []*Article{
+// 			{Title: "Article 1"},
+// 		}
+// 		return articles, true
+// 	}
+// }

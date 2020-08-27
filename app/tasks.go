@@ -27,7 +27,7 @@ func SetupTasks() {
 // UpdateArticles fetches new articles from NewsAPI and saves it to the database.
 func UpdateArticles(from, to time.Time, manual bool) {
 	fmt.Println()
-	db := NewDB()
+	db := NewDB("")
 	db.CreateTables()
 
 	searchTerm := "DACA"

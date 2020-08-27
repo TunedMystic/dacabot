@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"testing"
 	"time"
 
@@ -14,11 +13,26 @@ import (
 	"github.com/matryer/is"
 )
 
-func init() {
-	// Switch to the parent directory, so the `Server` type
-	// can load templates correctly.
-	os.Chdir("..")
-}
+// func init() {
+// 	// Switch to the parent directory, so the `Server` type
+// 	// can load templates correctly.
+// 	os.Chdir("..")
+// }
+
+// func TestMain(m *testing.M) {
+// 	fmt.Println("setUpp")
+// 	dir, _ := os.Getwd()
+// 	// Switch to the parent directory, so the `Server` type
+// 	// can load templates correctly.
+// 	os.Chdir("..")
+
+// 	code := m.Run()
+
+// 	fmt.Println("tearDownn")
+// 	os.Remove(dbName)
+// 	os.Chdir(dir)
+// 	os.Exit(code)
+// }
 
 // ------------------------------------------------------------------
 // Test Helpers

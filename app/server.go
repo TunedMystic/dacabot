@@ -3,7 +3,6 @@ package app
 import (
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -22,7 +21,7 @@ func NewServer() *Server {
 	s.Templates = s.GetTemplates()
 
 	fmt.Println("[setup] database")
-	s.DB = NewDB()
+	s.DB = NewDB("")
 	s.DB.CreateTables()
 
 	fmt.Println("[setup] router")
@@ -39,10 +38,7 @@ func (s *Server) GetTemplates() *template.Template {
 		},
 	}
 
-	tmpl, err := template.New("").Funcs(templateFuncs).ParseGlob(templatePath)
-	if err != nil {
-		log.Fatalf("Could not parse templates: %v\n", err)
-	}
+	tmpl := template.Must(template.New("").Funcs(templateFuncs).ParseGlob(templatePath))
 
 	return tmpl
 }
@@ -190,10 +186,6 @@ func (s *Server) GetRouter() *mux.Router {
 	router.Use(loggingMiddleware)
 	router.Use(cookieMiddleWare)
 	return router
-
-	// addr := fmt.Sprintf("0.0.0.0:%v", port)
-	// fmt.Printf("[run] starting Server on %v...\n", addr)
-	// log.Fatal(http.ListenAndServe(addr, s.Router))
 }
 
 // Cleanup handles cleaning up the server resources.
