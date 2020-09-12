@@ -48,7 +48,8 @@ func createArticles(db *sqlx.DB) func() {
 	`)
 
 	return func() {
-		db.MustExec(`delete from article;`)
+		// Truncate table and reset PK sequence.
+		db.MustExec(`delete from article; delete from sqlite_sequence where name='article';`)
 	}
 
 }
